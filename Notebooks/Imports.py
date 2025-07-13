@@ -18,3 +18,6 @@ from scipy.stats import gaussian_kde
 import pennylane as qml
 from pennylane.templates import RandomLayers
 from pennylane.qnn import TorchLayer
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from datetime import datetime
+import os
