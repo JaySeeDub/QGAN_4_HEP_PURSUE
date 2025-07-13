@@ -2,9 +2,11 @@
 
 This repository contains code for benchmarking **Quantum Generative Adversarial Networks (QGANs)** against classical GANs for **High Energy Physics (HEP)** simulations, specifically jet image generation. This work was conducted under the **PURSUE program with USCMS and Fermilab** under the guidance of Dr. Sergei Gleyzer and Eric Reinhardt.
 
+**Important:** If notebooks fail to render on GitHub, use [this](https://nbviewer.org/github/JaySeeDub/QGAN_4_HEP_PURSUE/tree/jet_mass/Notebooks/) link to view on nbviewer. 
+
 ## 🧠 Motivation
 
-This (Q)GAN seeks to implement novel HEP-motivated metrics (ΔR and energy statistics), tuneable distribution output, feature-based discrimination, and implicit η symmetry from detector geometry. The model incorporates various physical features (signal, η, ϕ, p<sub>T</sub>, mass, \Delta R, and statistical distributions) as codings for the generator, training it to produce a desired distribution of physically informed images. The discriminator is trained on the jet image and the feature codings (label, η, mass, p<sub>T</sub>), allowing it to learn classification of events from low-level detector data.
+This (Q)GAN seeks to implement novel HEP-motivated metrics (ΔR and energy statistics), tuneable distribution output, feature-based discrimination, and implicit η symmetry from detector geometry. The model incorporates various physical features (signal, η, ϕ, p<sub>T</sub>, mass, ΔR, and statistical distributions) as codings for the generator, training it to produce a desired distribution of physically informed images. The discriminator is trained on the jet image and the feature codings (label, η, mass, p<sub>T</sub>), allowing it to learn classification of events from low-level detector data.
 
 ---
 
