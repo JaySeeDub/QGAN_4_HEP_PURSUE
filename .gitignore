@@ -3,3 +3,5 @@ data/*.h5
 data/**.h5
 data/**.hdf5
 data/**/*.parquet
+Notebooks/models/*.pt
+Notebooks/models/*.pth
