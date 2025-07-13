@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[ ]:
+# In[1]:
 
 
 from Imports import *
@@ -21,7 +21,7 @@ print(jet_mass_data.keys())
 print(jet_mass_data['image'].shape)
 
 
-# In[6]:
+# In[3]:
 
 
 dev = qml.device("default.qubit", wires=8)
@@ -86,7 +86,7 @@ class quantum_feature_embedding_batch(nn.Module):
         return torch.stack(outputs)
 
 
-# In[7]:
+# In[4]:
 
 
 # Generator with Quantum Layer
@@ -194,7 +194,7 @@ class Discriminator(nn.Module):
         return prob  # Shape: (batch_size, 1)
 
 
-# In[8]:
+# In[5]:
 
 
 batch_size = 128*3
@@ -212,16 +212,6 @@ print("Feature shape:", dataset.features.shape)
 
 # In[ ]:
 
-
-tracked_fake_dR_mean = []
-tracked_fake_dR_std = []
-tracked_fake_pixel_mean = []
-tracked_fake_pixel_std = []
-
-tracked_real_dR_mean = []
-tracked_real_dR_std = []
-tracked_real_pixel_mean = []
-tracked_real_pixel_std = []
 
 latent_dim = 256
 lr = 10e-4
@@ -250,6 +240,51 @@ x_coords, y_coords = torch.meshgrid(
 # Distance from center
 dists = (torch.sqrt((x_coords - center_x) ** 2 + (y_coords - center_y) ** 2)).cuda()
 dists = dists.unsqueeze(0)  # [1, 16, 16]
+
+tracked_fake_dR_mean = []
+tracked_fake_dR_std = []
+tracked_fake_pixel_mean = []
+tracked_fake_pixel_std = []
+
+tracked_real_dR_mean = []
+tracked_real_dR_std = []
+tracked_real_pixel_mean = []
+tracked_real_pixel_std = []
+
+
+# In[ ]:
+
+
+## Load a previous model
+# Replace with the desired filename
+load_path = "models/Q_gan_model_20250712_224355.pt"
+
+# Load the checkpoint
+checkpoint = torch.load(load_path)
+
+# Restore model weights
+generator.load_state_dict(checkpoint["generator_state_dict"])
+discriminator.load_state_dict(checkpoint["discriminator_state_dict"])
+
+# Optionally restore tracking data
+g_losses = checkpoint["g_losses"]
+d_losses = checkpoint["d_losses"]
+
+tracked_fake_dR_mean = checkpoint["tracked_fake_dR_mean"]
+tracked_fake_dR_std = checkpoint["tracked_fake_dR_std"]
+tracked_fake_pixel_mean = checkpoint["tracked_fake_pixel_mean"]
+tracked_fake_pixel_std = checkpoint["tracked_fake_pixel_std"]
+
+tracked_real_dR_mean = checkpoint["tracked_real_dR_mean"]
+tracked_real_dR_std = checkpoint["tracked_real_dR_std"]
+tracked_real_pixel_mean = checkpoint["tracked_real_pixel_mean"]
+tracked_real_pixel_std = checkpoint["tracked_real_pixel_std"]
+
+print(f"Loaded model from {load_path}")
+
+
+# In[ ]:
+
 
 for epoch in range(n_epochs):
     for i, (real_image, real_features, flipped_image, flipped_features) in enumerate(dataloader):
@@ -466,6 +501,7 @@ for epoch in range(n_epochs):
 
 plot_metrics(g_losses, d_losses)
 
+## Last 10 epochs stats
 # Flatten all batches
 fake_dR_mean_vals = torch.cat(tracked_fake_dR_mean).numpy() / batch_size
 fake_dR_std_vals = torch.cat(tracked_fake_dR_std).numpy() / batch_size
@@ -511,6 +547,32 @@ plt.tight_layout()
 plt.suptitle("Real vs Fake Distributions by Statistic", fontsize=16, y=1.02)
 plt.show()
 
+## Save Model
+# Create output directory if it doesn't exist
+os.makedirs("models", exist_ok=True)
+
+# Timestamp for unique filenames
+timestamp = datetime.now().strftime("m%d_%H%M)
+
+# Save model states and tracked data in a single file
+save_path = f"models/Q_gan_model_{timestamp}.pt"
+torch.save({
+    "generator_state_dict": generator.state_dict(),
+    "discriminator_state_dict": discriminator.state_dict(),
+    "g_losses": g_losses,
+    "d_losses": d_losses,
+    "tracked_fake_dR_mean": tracked_fake_dR_mean,
+    "tracked_fake_dR_std": tracked_fake_dR_std,
+    "tracked_fake_pixel_mean": tracked_fake_pixel_mean,
+    "tracked_fake_pixel_std": tracked_fake_pixel_std,
+    "tracked_real_dR_mean": tracked_real_dR_mean,
+    "tracked_real_dR_std": tracked_real_dR_std,
+    "tracked_real_pixel_mean": tracked_real_pixel_mean,
+    "tracked_real_pixel_std": tracked_real_pixel_std
+}, save_path)
+
+print(f"Model and statistics saved to {save_path}")
+
 
 # ![image.png](attachment:7aee3b98-579c-4bcb-9682-eb417b7e3a7a.png)
 
@@ -545,51 +607,18 @@ plt.show()
 # In[ ]:
 
 
-def test_generated_samples(generator, kdes,  batch_size=4, latent_dim=256, codings = None):
-    generator.eval()  # Set to eval mode to disable dropout/batchnorm updates
+test_generated_samples(generator, discriminator, dataset, kdes, batch_size=100000)
 
-    # Latent vectors
-    z_img = torch.randn(batch_size, latent_dim, 1, 1).cuda()
-    # Should be very easy to modify which values are passed as codings
-    z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
-                          sample_fit_noise(kdes, num_samples=batch_size)[:,:]],
-                          dim=1).cuda()
-    # z_noise = torch.randn(batch_size, 5, ).cuda()
-    # z_feat = torch.cat([z_codings, z_noise], dim=1)
-    z_feat = z_codings
-
-    with torch.no_grad():
-        gen_samples = generator(z_feat)
-
-    gen_samples = gen_samples.cpu()
-    
-    print("Sample feature coding:", z_codings[1].cpu().numpy())
-
-    fig, axes = plt.subplots(1, min(batch_size, 16), figsize=(min(batch_size, 16), 1))
-    for i in range(min(batch_size, 16)):
-        axes[i].imshow(gen_samples[i, 0].numpy(), cmap= 'viridis')
-        axes[i].axis('off')
-    plt.tight_layout()
-    plt.show()
-    
-    generator.train()  # Restore training mode
-
-
-# In[ ]:
-
-
-test_generated_samples(generator, kdes, batch_size=16, latent_dim=256, codings = [0., 1.1214281, 0.7953802, 0.9241728,  0.69733775, 0.0033828, 0.01578446, 0.00170709, 0.02212167])
-n=16
-
-pred1 = discriminator(dataset.images[:n].unsqueeze(1).cuda(), dataset.features[:n,:4].cuda())
-print(pred1)
-new_dataset = dataset.features[:n,:4].clone()
-new_dataset[:n, 0] *= (-2**(new_dataset[:n, 0])+2)
-
-pred2 = discriminator(dataset.images[:n].unsqueeze(1).cuda(), new_dataset[:n,:4].cuda())
-print(pred2)
-
-print((pred1/pred2 - 1)*100)
+# Optional args:
+#     generator,
+#     discriminator,
+#     dataset,
+#     kdes,
+#     batch_size=16,
+#     latent_dim=256,
+#     codings=None,
+#     plot_distributions=True,
+#     compare_discriminator=True
 
 
 # In[ ]:

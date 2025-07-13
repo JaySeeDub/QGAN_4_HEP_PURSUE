@@ -93,4 +93,4 @@ cd <your_directory_name>/data
 wget https://data.mendeley.com/public-files/datasets/4r4v785rgx/files/132306f6-26f4-4583-8f1b-ccc5ad8da05d/file_downloaded
 mv file_downloaded jet-images_Mass60-100_pT250-300_R1.25_Pix25.hdf5
 ```
-Navigate to Scripts/ (or Notebooks/ depending for interactive) and run the model.
+Navigate to Scripts/ (or Notebooks/ for interactive) and run the model.
