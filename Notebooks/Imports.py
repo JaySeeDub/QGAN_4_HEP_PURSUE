@@ -2,6 +2,7 @@
 import torch
 from torch.utils.data import DataLoader, Dataset
 import torch.optim as optim
+from torch.optim.lr_scheduler import CosineAnnealingLR
 from torchvision.utils import make_grid
 import torchvision
 import torch.nn.functional as F

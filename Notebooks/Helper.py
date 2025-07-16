@@ -13,7 +13,7 @@ def feature_distributions(dataset):
     ]
     
     num_features = all_features.shape[1]
-    fig, axs = plt.subplots(3, 3, figsize=(16, 10))
+    fig, axs = plt.subplots(2, 4, figsize=(18, 10))
     axs = axs.flatten()
 
     kde_fits = {}
