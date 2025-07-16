@@ -12,7 +12,7 @@ This (Q)GAN seeks to implement novel HEP-motivated metrics (ΔR and energy stati
 
 ## 🗂️ Dataset
 
-THe primary dataset is the **Jet Mass dataset** found [here](https://data.mendeley.com/datasets/4r4v785rgx/1):
+The primary training dataset is the **Jet Mass dataset** found [here](https://data.mendeley.com/datasets/4r4v785rgx/1):
 
 Nachman, Benjamin; de Oliveira, Luke; Paganini, Michela (2017), “Pythia Generated Jet Images for Location Aware Generative Adversarial Network Training”, Mendeley Data, V1, doi: 10.17632/4r4v785rgx.1
 
