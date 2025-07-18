@@ -6,7 +6,7 @@ from Imports import *
 from Helper import *
 
 def plot_generated_samples(generator, dataset, kdes, batch_size=16, latent_dim=256):
-    generator.eval()  # Set to eval mode to disable dropout/batchnorm updates
+      # Set to eval mode to disable dropout/batchnorm updates
 
     # Latent vectors
     # Should be very easy to modify which values are passed as codings
@@ -34,7 +34,62 @@ def plot_generated_samples(generator, dataset, kdes, batch_size=16, latent_dim=2
     plt.tight_layout()
     plt.show()
     
-    generator.train()  # Restore training mode
+      # Restore training mode
+
+def plot_real_samples(dataset):
+    images = dataset.images
+    N = images.shape[0]
+    vmin = images.min()
+    vmax = images.max()
+    
+    # Extract labels
+    y_labels = dataset.features[:, 0].long()
+    
+    # Separate images by label
+    images_0 = images[y_labels == 0]
+    images_1 = images[y_labels == 1]
+    
+    # Compute mean images
+    mean_0 = images_0.mean(dim=0)
+    mean_1 = images_1.mean(dim=0)
+    
+    # --- Plot Mean Images (Separate Overlay Plots) ---
+    fig1, axs = plt.subplots(1, 2, figsize=(10, 5))
+    
+    im0 = axs[0].imshow(mean_0, cmap='viridis', vmin=vmin, vmax=vmax)
+    axs[0].set_title("Mean Image: W Boson (Label 0)")
+    axs[0].axis('off')
+    fig1.colorbar(im0, ax=axs[0], fraction=0.046, pad=0.04)
+    
+    im1 = axs[1].imshow(mean_1, cmap='viridis', vmin=vmin, vmax=vmax)
+    axs[1].set_title("Mean Image: Background QCD (Label 1)")
+    axs[1].axis('off')
+    fig1.colorbar(im1, ax=axs[1], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # --- Plot Grid of Random Images with Shared Colorbar ---
+    n_rows, n_cols = 4, 16
+    n_images = n_rows * n_cols
+    
+    fig2, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols, n_rows * 1.5))
+    
+    for i in range(n_images):
+        n = torch.randint(N, (1,)).item()
+        row = i // n_cols
+        col = i % n_cols
+        ax = axes[row, col]
+        im = ax.imshow(images[n], cmap='viridis', vmin=vmin, vmax=vmax)
+        ax.axis('off')
+    
+    # Shared colorbar
+    fig2.subplots_adjust(right=0.9)
+    cbar_ax = fig2.add_axes([.95, 0.15, 0.01, 0.7])
+    fig2.colorbar(im, cax=cbar_ax)
+    
+    plt.show()
+
 
 def plot_metrics(g_losses, d_losses):
     epochs = range(1, len(g_losses) + 1)
@@ -84,8 +139,6 @@ def test_generated_samples(
     plot_distributions=True,
     compare_discriminator=True
 ):
-    generator.eval()
-    discriminator.eval()
 
     # Latent vectors
     z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
@@ -208,8 +261,8 @@ def test_generated_samples(
         plt.title("Discriminator Confusion Matrix (Real vs Generated Samples)")
         plt.show()
 
-    generator.train()
-    discriminator.train()
+    
+    
 
 def compute_distance_map(H, W):
     center_x, center_y = (W - 1) / 2, (H - 1) / 2
@@ -260,8 +313,8 @@ def plot_tracked_statistics(stats_dict):
         real_vals_trunc = real_vals[(real_vals >= lower) & (real_vals <= upper)]
         fake_vals_trunc = fake_vals[(fake_vals >= lower) & (fake_vals <= upper)]
 
-        ax.hist(real_vals_trunc, bins=1000, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
-        ax.hist(fake_vals_trunc, bins=1000, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
+        ax.hist(real_vals_trunc, bins=150, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
+        ax.hist(fake_vals_trunc, bins=150, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
         ax.set_xlim(lower, upper)
         ax.set_title(stat_titles[i])
         ax.legend()

@@ -13,7 +13,7 @@ def feature_distributions(dataset):
     ]
     
     num_features = all_features.shape[1]
-    fig, axs = plt.subplots(2, 4, figsize=(18, 10))
+    fig, axs = plt.subplots(2, 4, figsize=(20, 6))
     axs = axs.flatten()
 
     kde_fits = {}
@@ -38,7 +38,7 @@ def feature_distributions(dataset):
         axs[i].legend()
 
     plt.tight_layout()
-    plt.suptitle("Feature Distributions with Gaussian and KDE Fits", fontsize=16, y=1.03)
+    plt.suptitle("Feature Distributions with KDE Fits", fontsize=16, y=1.03)
     plt.show()
     return kde_fits
 
@@ -112,3 +112,9 @@ def soft_count_nonzero(x, threshold=3e-3, sharpness=1000.0):
 def soft_threshold(x, threshold=0.001, sharpness=1000.0):
     return x * torch.sigmoid(sharpness * (x - threshold))
 
+class eps_relu(nn.Module):
+    def __init__(self, epsilon):
+        super(eps_relu, self).__init__()
+        self.eps = epsilon
+    def forward(self, x):
+        return torch.maximum(x, torch.zeros_like(x) + self.eps)
