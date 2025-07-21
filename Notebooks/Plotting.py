@@ -90,7 +90,6 @@ def plot_real_samples(dataset):
     
     plt.show()
 
-
 def plot_metrics(g_losses, d_losses):
     epochs = range(1, len(g_losses) + 1)
     plt.figure(figsize=(8, 4))
@@ -139,6 +138,8 @@ def test_generated_samples(
     plot_distributions=True,
     compare_discriminator=True
 ):
+    
+    
 
     # Latent vectors
     z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
@@ -179,7 +180,7 @@ def test_generated_samples(
             'real_pixel_mean': real_pixel_mean,
             'real_pixel_std': real_pixel_std
         }
-        stats_dict = {
+        stats = {
             'fake_dR_mean': [],
             'fake_dR_std': [],
             'fake_pixel_mean': [],
@@ -189,15 +190,15 @@ def test_generated_samples(
             'real_pixel_mean': [],
             'real_pixel_std': []
         }
-        track_statistics(stats_dict, fake_stats, real_stats)
-        plot_tracked_statistics(stats_dict)
+        track_statistics(stats, fake_stats, real_stats)
+        plot_tracked_statistics(stats)
 
     if compare_discriminator:
         n_events = batch_size
-        real_features = dataset.features[:n_events, :4].clone()
-        real_features = torch.cat([real_features, dataset.features[-n_events:, :4].clone()], 0)
-        real_imgs = dataset.images[:n_events].clone()
-        real_imgs = torch.cat([real_imgs, dataset.images[-n_events:].clone()], 0)
+        real_features = dataset.features[:int(n_events/2), :4].clone()
+        real_features = torch.cat([real_features, dataset.features[int(-n_events/2):, :4].clone()], 0)
+        real_imgs = dataset.images[:int(n_events/2)].clone()
+        real_imgs = torch.cat([real_imgs, dataset.images[int(-n_events/2):].clone()], 0)
         real_labels = real_features[:, 0]
 
         test_features = real_features.clone()
@@ -226,9 +227,8 @@ def test_generated_samples(
 
         # Confusion matrix
         cm = confusion_matrix(true_labels, predicted_labels)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Fake", "Real"])
-        disp.plot(cmap='Blues', values_format='d')
-        plt.title("Discriminator Confusion Matrix (Real Samples Only)")
+        plot_confusion_matrix(cm, ["Fake", "Real"], "Signal vs Background", vmin=0, vmax=n_events)
+        plot_confusion_matrix_percent(cm, ["Fake", "Real"], "Signal vs Background")
 
         # Confusion matrix for generated samples
         with torch.no_grad():
@@ -237,11 +237,11 @@ def test_generated_samples(
 
         # Make sure we use the same number of real and fake samples
         n = min(len(fake_feats), len(real_features))
-        real_input_imgs = real_imgs[:n].unsqueeze(1).to('cuda')
-        real_input_feats = real_features[:n].to('cuda')
+        real_input_imgs = real_imgs[:n_events].unsqueeze(1).to('cuda')
+        real_input_feats = real_features[:n_events].to('cuda')
 
-        fake_input_imgs = fake_imgs[:n].to('cuda')
-        fake_input_feats = fake_feats[:n].to('cuda')
+        fake_input_imgs = fake_imgs[:n_events].to('cuda')
+        fake_input_feats = fake_feats[:n_events].to('cuda')
 
         # Get predictions
         with torch.no_grad():
@@ -254,16 +254,34 @@ def test_generated_samples(
             
         # Compute confusion matrix
         cm = confusion_matrix(y_true, y_pred)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Fake", "Real"])
-    
-        # Plot
-        disp.plot(cmap='Blues', values_format='d')
-        plt.title("Discriminator Confusion Matrix (Real vs Generated Samples)")
-        plt.show()
+        plot_confusion_matrix(cm, ["Fake", "Real"], "Real vs Generated", vmin=0, vmax=n_events)
+        plot_confusion_matrix_percent(cm, ["Fake", "Real"], "Real vs Generated Samples")
+
 
     
     
 
+def plot_confusion_matrix(cm, labels, title, vmin=0, vmax=10000):
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax, cbar_kws={"label": "Count"})
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
+    
+def plot_confusion_matrix_percent(cm, labels, title):
+    cm_percent = cm / cm.sum() * 200  # Normalize to percentages
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm_percent, annot=True, fmt=".1f", cmap="Blues",
+                xticklabels=labels, yticklabels=labels,
+                vmin=0, vmax=100, cbar_kws={"label": "Percentage (%)"})
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
+    
 def compute_distance_map(H, W):
     center_x, center_y = (W - 1) / 2, (H - 1) / 2
     x_coords, y_coords = torch.meshgrid(
