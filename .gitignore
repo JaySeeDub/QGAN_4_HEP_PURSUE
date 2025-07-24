@@ -5,4 +5,5 @@ data/**.hdf5
 data/**/*.parquet
 Notebooks/models/*.pt
 Notebooks/models/*.pth
+*/__pycache__/*
 .ipynb_checkpoints/
