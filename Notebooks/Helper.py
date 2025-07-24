@@ -118,3 +118,11 @@ class eps_relu(nn.Module):
         self.eps = epsilon
     def forward(self, x):
         return torch.maximum(x, torch.zeros_like(x) + self.eps)
+
+class BiasLayer(nn.Module):
+    def __init__(self, size):
+        super().__init__()
+        self.bias = nn.Parameter(torch.zeros(size))  # Learnable bias
+
+    def forward(self, x):
+        return x + self.bias

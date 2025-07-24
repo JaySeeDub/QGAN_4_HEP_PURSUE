@@ -180,17 +180,7 @@ def test_generated_samples(
             'real_pixel_mean': real_pixel_mean,
             'real_pixel_std': real_pixel_std
         }
-        stats = {
-            'fake_dR_mean': [],
-            'fake_dR_std': [],
-            'fake_pixel_mean': [],
-            'fake_pixel_std': [],
-            'real_dR_mean': [],
-            'real_dR_std': [],
-            'real_pixel_mean': [],
-            'real_pixel_std': []
-        }
-        track_statistics(stats, fake_stats, real_stats)
+        stats = track_statistics(fake_stats, real_stats)
         plot_tracked_statistics(stats)
 
     if compare_discriminator:
@@ -236,7 +226,7 @@ def test_generated_samples(
             fake_feats = z_codings[:, :4]  # discriminator expects first 4 features
 
         # Make sure we use the same number of real and fake samples
-        n = min(len(fake_feats), len(real_features))
+        n_events = min(len(fake_feats), len(real_features))
         real_input_imgs = real_imgs[:n_events].unsqueeze(1).to('cuda')
         real_input_feats = real_features[:n_events].to('cuda')
 
@@ -249,17 +239,13 @@ def test_generated_samples(
             fake_preds = discriminator(fake_input_imgs, fake_input_feats).detach().to('cpu').numpy().squeeze()
 
         # Ground truth: 1 for real, 0 for fake
-        y_true = np.concatenate([np.ones(n), np.zeros(n)])
+        y_true = np.concatenate([np.ones_like(real_preds), np.zeros_like(fake_preds)])
         y_pred = np.concatenate([real_preds >= 0.5, fake_preds >= 0.5]).astype(int)
             
         # Compute confusion matrix
         cm = confusion_matrix(y_true, y_pred)
         plot_confusion_matrix(cm, ["Fake", "Real"], "Real vs Generated", vmin=0, vmax=n_events)
         plot_confusion_matrix_percent(cm, ["Fake", "Real"], "Real vs Generated Samples")
-
-
-    
-    
 
 def plot_confusion_matrix(cm, labels, title, vmin=0, vmax=10000):
     plt.figure(figsize=(5, 4))
@@ -303,16 +289,27 @@ def compute_fake_statistics(fake_img, dists):
     
     return stats
 
-def track_statistics(stats_dict, fake_stats, real_stats):
+def track_statistics(fake_stats, real_stats):
     """
     Appends detached CPU copies of statistics to the tracking dictionary.
     """
+    stats_dict = {
+    'fake_dR_mean': [],
+    'fake_dR_std': [],
+    'fake_pixel_mean': [],
+    'fake_pixel_std': [],
+    'real_dR_mean': [],
+    'real_dR_std': [],
+    'real_pixel_mean': [],
+    'real_pixel_std': []
+}
     for key, val in fake_stats.items():
         stats_dict[f'{key}'].append(val.detach().to('cpu'))
     for key, val in real_stats.items():
         stats_dict[f'{key}'].append(val.detach().to('cpu'))
-      
-        
+
+    return stats_dict
+
 def plot_tracked_statistics(stats_dict):
 
     fake_stats = [np.concatenate(stats_dict[f'fake_{k}']) for k in ['dR_mean', 'dR_std', 'pixel_mean', 'pixel_std']]
@@ -331,8 +328,11 @@ def plot_tracked_statistics(stats_dict):
         real_vals_trunc = real_vals[(real_vals >= lower) & (real_vals <= upper)]
         fake_vals_trunc = fake_vals[(fake_vals >= lower) & (fake_vals <= upper)]
 
-        ax.hist(real_vals_trunc, bins=150, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
-        ax.hist(fake_vals_trunc, bins=150, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
+        n_samples = min(len(real_vals_trunc), len(fake_vals_trunc))
+        bins = max(10, int(np.sqrt(n_samples)/2))
+
+        ax.hist(real_vals_trunc, bins=bins, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
+        ax.hist(fake_vals_trunc, bins=bins, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
         ax.set_xlim(lower, upper)
         ax.set_title(stat_titles[i])
         ax.legend()
