@@ -76,6 +76,7 @@ Tuneable Hyperparameters:
 - **Generated Jet Samples** at each epoch
 - **Loss Curves** for Generator and Discriminator
 - **Statistical Matching** for input/output ΔR and pixel stats
+- **Confusion Matrices** for discriminator classification of signal/background and real/fake images
 
 ---
 
@@ -95,4 +96,19 @@ cd <your_directory_name>/data
 wget https://data.mendeley.com/public-files/datasets/4r4v785rgx/files/132306f6-26f4-4583-8f1b-ccc5ad8da05d/file_downloaded
 mv file_downloaded jet-images_Mass60-100_pT250-300_R1.25_Pix25.hdf5
 ```
-Navigate to Scripts/ (or Notebooks/ for interactive) and run the model.
+Navigate to Scripts/ (or Notebooks/ for interactive) and run the desired model. Sample model checkpoints are available to load from models/. If training from scratch, hyperparameters for loss terms, learning rate, KL divergence, etc will likely need to be tuned for best implementation.
+
+## 📈 Sample Results:
+
+Model Evaluation Summary:
+
+-Both classical and quantum models were evaluated on 100,000 validation events.
+
+-Key physics-based statistics were compared to assess distribution matching.
+
+<img width="736" height="730" alt="image" src="https://github.com/user-attachments/assets/1a564c62-f498-4733-8c70-c77f5dfde382" />
+
+
+<img width="571" height="633" alt="image" src="https://github.com/user-attachments/assets/11635a5d-54ba-4cc0-afff-4fd2854c59db" />
+
+
