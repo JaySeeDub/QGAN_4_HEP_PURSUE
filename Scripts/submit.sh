@@ -19,6 +19,6 @@ export TORCH_DISTRIBUTED_DEBUG=INFO
 
 srun --unbuffered --export=ALL bash -c '
 
-	python QGan-Train.py
-	python ClassGan-Train.py
+	python QGAN_Random_Layer_(Best).py
+	python ClassGan.py
 '

@@ -6,7 +6,7 @@ from Imports import *
 from Helper import *
 
 def plot_generated_samples(generator, dataset, kdes, batch_size=16, latent_dim=256):
-    generator.eval()  # Set to eval mode to disable dropout/batchnorm updates
+      # Set to eval mode to disable dropout/batchnorm updates
 
     # Latent vectors
     # Should be very easy to modify which values are passed as codings
@@ -34,7 +34,61 @@ def plot_generated_samples(generator, dataset, kdes, batch_size=16, latent_dim=2
     plt.tight_layout()
     plt.show()
     
-    generator.train()  # Restore training mode
+      # Restore training mode
+
+def plot_real_samples(dataset):
+    images = dataset.images
+    N = images.shape[0]
+    vmin = images.min()
+    vmax = images.max()
+    
+    # Extract labels
+    y_labels = dataset.features[:, 0].long()
+    
+    # Separate images by label
+    images_0 = images[y_labels == 0]
+    images_1 = images[y_labels == 1]
+    
+    # Compute mean images
+    mean_0 = images_0.mean(dim=0)
+    mean_1 = images_1.mean(dim=0)
+    
+    # --- Plot Mean Images (Separate Overlay Plots) ---
+    fig1, axs = plt.subplots(1, 2, figsize=(10, 5))
+    
+    im0 = axs[0].imshow(mean_0, cmap='viridis', vmin=vmin, vmax=vmax)
+    axs[0].set_title("Mean Image: W Boson (Label 0)")
+    axs[0].axis('off')
+    fig1.colorbar(im0, ax=axs[0], fraction=0.046, pad=0.04)
+    
+    im1 = axs[1].imshow(mean_1, cmap='viridis', vmin=vmin, vmax=vmax)
+    axs[1].set_title("Mean Image: Background QCD (Label 1)")
+    axs[1].axis('off')
+    fig1.colorbar(im1, ax=axs[1], fraction=0.046, pad=0.04)
+    
+    plt.tight_layout()
+    plt.show()
+    
+    # --- Plot Grid of Random Images with Shared Colorbar ---
+    n_rows, n_cols = 4, 16
+    n_images = n_rows * n_cols
+    
+    fig2, axes = plt.subplots(n_rows, n_cols, figsize=(n_cols, n_rows * 1.5))
+    
+    for i in range(n_images):
+        n = torch.randint(N, (1,)).item()
+        row = i // n_cols
+        col = i % n_cols
+        ax = axes[row, col]
+        im = ax.imshow(images[n], cmap='viridis', vmin=vmin, vmax=vmax)
+        ax.axis('off')
+    
+    # Shared colorbar
+    fig2.subplots_adjust(right=0.9)
+    cbar_ax = fig2.add_axes([.95, 0.15, 0.01, 0.7])
+    fig2.colorbar(im, cax=cbar_ax)
+    
+    plt.show()
 
 def plot_metrics(g_losses, d_losses):
     epochs = range(1, len(g_losses) + 1)
@@ -84,8 +138,8 @@ def test_generated_samples(
     plot_distributions=True,
     compare_discriminator=True
 ):
-    generator.eval()
-    discriminator.eval()
+    
+    
 
     # Latent vectors
     z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
@@ -126,25 +180,15 @@ def test_generated_samples(
             'real_pixel_mean': real_pixel_mean,
             'real_pixel_std': real_pixel_std
         }
-        stats_dict = {
-            'fake_dR_mean': [],
-            'fake_dR_std': [],
-            'fake_pixel_mean': [],
-            'fake_pixel_std': [],
-            'real_dR_mean': [],
-            'real_dR_std': [],
-            'real_pixel_mean': [],
-            'real_pixel_std': []
-        }
-        track_statistics(stats_dict, fake_stats, real_stats)
-        plot_tracked_statistics(stats_dict)
+        stats = track_statistics(fake_stats, real_stats)
+        plot_tracked_statistics(stats)
 
     if compare_discriminator:
         n_events = batch_size
-        real_features = dataset.features[:n_events, :4].clone()
-        real_features = torch.cat([real_features, dataset.features[-n_events:, :4].clone()], 0)
-        real_imgs = dataset.images[:n_events].clone()
-        real_imgs = torch.cat([real_imgs, dataset.images[-n_events:].clone()], 0)
+        real_features = dataset.features[:int(n_events/2), :4].clone()
+        real_features = torch.cat([real_features, dataset.features[int(-n_events/2):, :4].clone()], 0)
+        real_imgs = dataset.images[:int(n_events/2)].clone()
+        real_imgs = torch.cat([real_imgs, dataset.images[int(-n_events/2):].clone()], 0)
         real_labels = real_features[:, 0]
 
         test_features = real_features.clone()
@@ -173,9 +217,8 @@ def test_generated_samples(
 
         # Confusion matrix
         cm = confusion_matrix(true_labels, predicted_labels)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Fake", "Real"])
-        disp.plot(cmap='Blues', values_format='d')
-        plt.title("Discriminator Confusion Matrix (Real Samples Only)")
+        plot_confusion_matrix(cm, ["Fake", "Real"], "Signal vs Background", vmin=0, vmax=n_events)
+        plot_confusion_matrix_percent(cm, ["Fake", "Real"], "Signal vs Background")
 
         # Confusion matrix for generated samples
         with torch.no_grad():
@@ -183,12 +226,12 @@ def test_generated_samples(
             fake_feats = z_codings[:, :4]  # discriminator expects first 4 features
 
         # Make sure we use the same number of real and fake samples
-        n = min(len(fake_feats), len(real_features))
-        real_input_imgs = real_imgs[:n].unsqueeze(1).to('cuda')
-        real_input_feats = real_features[:n].to('cuda')
+        n_events = min(len(fake_feats), len(real_features))
+        real_input_imgs = real_imgs[:n_events].unsqueeze(1).to('cuda')
+        real_input_feats = real_features[:n_events].to('cuda')
 
-        fake_input_imgs = fake_imgs[:n].to('cuda')
-        fake_input_feats = fake_feats[:n].to('cuda')
+        fake_input_imgs = fake_imgs[:n_events].to('cuda')
+        fake_input_feats = fake_feats[:n_events].to('cuda')
 
         # Get predictions
         with torch.no_grad():
@@ -196,21 +239,35 @@ def test_generated_samples(
             fake_preds = discriminator(fake_input_imgs, fake_input_feats).detach().to('cpu').numpy().squeeze()
 
         # Ground truth: 1 for real, 0 for fake
-        y_true = np.concatenate([np.ones(n), np.zeros(n)])
+        y_true = np.concatenate([np.ones_like(real_preds), np.zeros_like(fake_preds)])
         y_pred = np.concatenate([real_preds >= 0.5, fake_preds >= 0.5]).astype(int)
             
         # Compute confusion matrix
         cm = confusion_matrix(y_true, y_pred)
-        disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=["Fake", "Real"])
+        plot_confusion_matrix(cm, ["Fake", "Real"], "Real vs Generated", vmin=0, vmax=n_events)
+        plot_confusion_matrix_percent(cm, ["Fake", "Real"], "Real vs Generated Samples")
+
+def plot_confusion_matrix(cm, labels, title, vmin=0, vmax=10000):
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm, annot=True, fmt="d", cmap="Blues", xticklabels=labels, yticklabels=labels, vmin=vmin, vmax=vmax, cbar_kws={"label": "Count"})
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
     
-        # Plot
-        disp.plot(cmap='Blues', values_format='d')
-        plt.title("Discriminator Confusion Matrix (Real vs Generated Samples)")
-        plt.show()
-
-    generator.train()
-    discriminator.train()
-
+def plot_confusion_matrix_percent(cm, labels, title):
+    cm_percent = cm / cm.sum() * 200  # Normalize to percentages
+    plt.figure(figsize=(5, 4))
+    sns.heatmap(cm_percent, annot=True, fmt=".1f", cmap="Blues",
+                xticklabels=labels, yticklabels=labels,
+                vmin=0, vmax=100, cbar_kws={"label": "Percentage (%)"})
+    plt.ylabel("True label")
+    plt.xlabel("Predicted label")
+    plt.title(title)
+    plt.tight_layout()
+    plt.show()
+    
 def compute_distance_map(H, W):
     center_x, center_y = (W - 1) / 2, (H - 1) / 2
     x_coords, y_coords = torch.meshgrid(
@@ -232,16 +289,27 @@ def compute_fake_statistics(fake_img, dists):
     
     return stats
 
-def track_statistics(stats_dict, fake_stats, real_stats):
+def track_statistics(fake_stats, real_stats):
     """
     Appends detached CPU copies of statistics to the tracking dictionary.
     """
+    stats_dict = {
+    'fake_dR_mean': [],
+    'fake_dR_std': [],
+    'fake_pixel_mean': [],
+    'fake_pixel_std': [],
+    'real_dR_mean': [],
+    'real_dR_std': [],
+    'real_pixel_mean': [],
+    'real_pixel_std': []
+}
     for key, val in fake_stats.items():
         stats_dict[f'{key}'].append(val.detach().to('cpu'))
     for key, val in real_stats.items():
         stats_dict[f'{key}'].append(val.detach().to('cpu'))
-      
-        
+
+    return stats_dict
+
 def plot_tracked_statistics(stats_dict):
 
     fake_stats = [np.concatenate(stats_dict[f'fake_{k}']) for k in ['dR_mean', 'dR_std', 'pixel_mean', 'pixel_std']]
@@ -260,8 +328,11 @@ def plot_tracked_statistics(stats_dict):
         real_vals_trunc = real_vals[(real_vals >= lower) & (real_vals <= upper)]
         fake_vals_trunc = fake_vals[(fake_vals >= lower) & (fake_vals <= upper)]
 
-        ax.hist(real_vals_trunc, bins=1000, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
-        ax.hist(fake_vals_trunc, bins=1000, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
+        n_samples = min(len(real_vals_trunc), len(fake_vals_trunc))
+        bins = max(10, int(np.sqrt(n_samples)/2))
+
+        ax.hist(real_vals_trunc, bins=bins, alpha=0.6, label='Real', edgecolor='black', density=True, histtype='stepfilled')
+        ax.hist(fake_vals_trunc, bins=bins, alpha=0.6, label='Fake', edgecolor='black', density=True, histtype='stepfilled')
         ax.set_xlim(lower, upper)
         ax.set_title(stat_titles[i])
         ax.legend()

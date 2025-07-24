@@ -22,3 +22,6 @@ from pennylane.qnn import TorchLayer
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from datetime import datetime
 import os
+import seaborn as sns
+from torchview import draw_graph
+
