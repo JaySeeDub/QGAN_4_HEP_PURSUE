@@ -1,0 +1,31 @@
+Properties:
+
+Generator Sampling
+1. Smote
+2. KDE
+3. Noise
+
+Losses
+4. Symmetry
+5. Stat Loss
+6. NNZ Loss
+
+Discriminator Input
+7. Image Only
+8. Feature Codings
+
+
+Models:
+
+1. Basic - Noise input to generator, just image input to discriminator, only BCE/validation loss, no symmetry         (training)
+2. Potential - KDE input to generator, image + features to discriminator, only BCE/validation loss, no symmetry 
+3. Current - KDE input to generator, image + features to discriminator, BCE + stat + NNZ loss, w/ symmetry            (DONE)
+4. Final - SMOTE input to generator, image + features to discriminator, BCE + stat + NNZ loss, w/ symmetry            (training)
+
+Metrics:
+
+Disc AUC
+Confusion
+Stat Comparison
+
+

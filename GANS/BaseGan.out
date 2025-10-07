@@ -1,0 +1,146 @@
+<KeysViewHDF5 ['image', 'jet_delta_R', 'jet_eta', 'jet_mass', 'jet_phi', 'jet_pt', 'signal', 'tau_1', 'tau_2', 'tau_21', 'tau_3', 'tau_32']>
+(872666, 25, 25)
+Image shape: torch.Size([872666, 16, 16])
+dR Mean: torch.Size([872666])
+dR STD: torch.Size([872666])
+Pixel Mean: torch.Size([872666])
+Pixel STD: torch.Size([872666])
+ΔR min: 0.0
+ΔR max: 2.4713454246520996
+ΔR mean min: 0.003572926390916109
+ΔR mean max: 0.015763528645038605
+ΔR std min: 0.017520317807793617
+ΔR std max: 0.16022197902202606
+Weights (pixel intensity) min: 0.0
+Weights (pixel intensity) max: 1.0
+Pixel mean min: 0.0028264394495636225
+Pixel mean max: 0.004322932101786137
+Pixel std min: 0.008012386038899422
+Pixel std max: 0.06249340996146202
+Number of samples: 872666
+Image shape: torch.Size([872666, 16, 16])
+Feature shape: torch.Size([872666, 9])
+Generator Params: 689313
+Discriminator Params: 935297
+Total Params: 1624610
+torch.Size([256, 1, 16, 16])
+✅ Saved new best generator (epoch 1, g_loss=0.5525)
+✅ Saved new best discriminator (epoch 1, d_loss=0.6926)
+[Epoch 1/100] [D loss: 0.6926] [G loss: 0.5525] [Validity_loss: 0.5525]
+Model and statistics saved to models/base_gan_model_temp.pt
+✅ Saved new best discriminator (epoch 2, d_loss=0.6918)
+[Epoch 2/100] [D loss: 0.6918] [G loss: 0.5563] [Validity_loss: 0.5563]
+[Epoch 3/100] [D loss: 0.6940] [G loss: 0.5532] [Validity_loss: 0.5532]
+[Epoch 4/100] [D loss: 0.6932] [G loss: 0.5542] [Validity_loss: 0.5542]
+[Epoch 5/100] [D loss: 0.6931] [G loss: 0.5542] [Validity_loss: 0.5542]
+✅ Saved new best discriminator (epoch 6, d_loss=0.4188)
+[Epoch 6/100] [D loss: 0.4188] [G loss: 0.8997] [Validity_loss: 0.8997]
+[Epoch 7/100] [D loss: 0.7489] [G loss: 0.7448] [Validity_loss: 0.7448]
+[Epoch 8/100] [D loss: 0.6315] [G loss: 0.6683] [Validity_loss: 0.6683]
+[Epoch 9/100] [D loss: 0.5281] [G loss: 0.7458] [Validity_loss: 0.7458]
+✅ Saved new best generator (epoch 10, g_loss=0.1836)
+[Epoch 10/100] [D loss: 1.2828] [G loss: 0.1836] [Validity_loss: 0.1836]
+[Epoch 11/100] [D loss: 0.6387] [G loss: 0.6902] [Validity_loss: 0.6902]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 12/100] [D loss: 0.4576] [G loss: 0.7942] [Validity_loss: 0.7942]
+[Epoch 13/100] [D loss: 0.6704] [G loss: 0.6143] [Validity_loss: 0.6143]
+[Epoch 14/100] [D loss: 0.5959] [G loss: 0.6766] [Validity_loss: 0.6766]
+[Epoch 15/100] [D loss: 0.4918] [G loss: 0.8487] [Validity_loss: 0.8487]
+[Epoch 16/100] [D loss: 0.4821] [G loss: 0.9286] [Validity_loss: 0.9286]
+[Epoch 17/100] [D loss: 0.4602] [G loss: 0.9255] [Validity_loss: 0.9255]
+[Epoch 18/100] [D loss: 0.5335] [G loss: 0.8066] [Validity_loss: 0.8066]
+[Epoch 19/100] [D loss: 0.6735] [G loss: 0.7015] [Validity_loss: 0.7015]
+[Epoch 20/100] [D loss: 0.5911] [G loss: 0.6776] [Validity_loss: 0.6776]
+[Epoch 21/100] [D loss: 0.4189] [G loss: 0.8677] [Validity_loss: 0.8677]
+Model and statistics saved to models/base_gan_model_temp.pt
+✅ Saved new best discriminator (epoch 22, d_loss=0.1884)
+[Epoch 22/100] [D loss: 0.1884] [G loss: 2.2959] [Validity_loss: 2.2959]
+[Epoch 23/100] [D loss: 0.4611] [G loss: 1.0845] [Validity_loss: 1.0845]
+[Epoch 24/100] [D loss: 0.5708] [G loss: 0.6046] [Validity_loss: 0.6046]
+[Epoch 25/100] [D loss: 0.4806] [G loss: 0.8278] [Validity_loss: 0.8278]
+[Epoch 26/100] [D loss: 0.5275] [G loss: 0.9877] [Validity_loss: 0.9877]
+[Epoch 27/100] [D loss: 0.4709] [G loss: 1.2423] [Validity_loss: 1.2423]
+[Epoch 28/100] [D loss: 0.4369] [G loss: 0.8532] [Validity_loss: 0.8532]
+[Epoch 29/100] [D loss: 0.5975] [G loss: 0.7350] [Validity_loss: 0.7350]
+[Epoch 30/100] [D loss: 0.5095] [G loss: 0.8689] [Validity_loss: 0.8689]
+[Epoch 31/100] [D loss: 0.3615] [G loss: 1.0595] [Validity_loss: 1.0595]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 32/100] [D loss: 0.4474] [G loss: 0.9328] [Validity_loss: 0.9328]
+[Epoch 33/100] [D loss: 0.4540] [G loss: 0.8515] [Validity_loss: 0.8515]
+[Epoch 34/100] [D loss: 0.4898] [G loss: 0.9314] [Validity_loss: 0.9314]
+[Epoch 35/100] [D loss: 0.4873] [G loss: 1.1944] [Validity_loss: 1.1944]
+[Epoch 36/100] [D loss: 0.5457] [G loss: 0.8220] [Validity_loss: 0.8220]
+[Epoch 37/100] [D loss: 0.4744] [G loss: 1.1394] [Validity_loss: 1.1394]
+[Epoch 38/100] [D loss: 0.6796] [G loss: 1.0752] [Validity_loss: 1.0752]
+[Epoch 39/100] [D loss: 0.4761] [G loss: 1.0979] [Validity_loss: 1.0979]
+[Epoch 40/100] [D loss: 0.5490] [G loss: 0.8102] [Validity_loss: 0.8102]
+[Epoch 41/100] [D loss: 0.6079] [G loss: 0.8605] [Validity_loss: 0.8605]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 42/100] [D loss: 0.6017] [G loss: 0.7913] [Validity_loss: 0.7913]
+[Epoch 43/100] [D loss: 0.4331] [G loss: 0.9558] [Validity_loss: 0.9558]
+[Epoch 44/100] [D loss: 0.3888] [G loss: 1.0283] [Validity_loss: 1.0283]
+[Epoch 45/100] [D loss: 0.5459] [G loss: 0.7966] [Validity_loss: 0.7966]
+[Epoch 46/100] [D loss: 0.4976] [G loss: 1.0616] [Validity_loss: 1.0616]
+[Epoch 47/100] [D loss: 0.4651] [G loss: 1.0321] [Validity_loss: 1.0321]
+[Epoch 48/100] [D loss: 0.4363] [G loss: 1.0672] [Validity_loss: 1.0672]
+[Epoch 49/100] [D loss: 0.4506] [G loss: 0.9368] [Validity_loss: 0.9368]
+[Epoch 50/100] [D loss: 0.4536] [G loss: 0.9067] [Validity_loss: 0.9067]
+[Epoch 51/100] [D loss: 0.5025] [G loss: 0.8371] [Validity_loss: 0.8371]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 52/100] [D loss: 0.4241] [G loss: 1.0412] [Validity_loss: 1.0412]
+[Epoch 53/100] [D loss: 0.3115] [G loss: 1.6741] [Validity_loss: 1.6741]
+[Epoch 54/100] [D loss: 0.3778] [G loss: 1.0906] [Validity_loss: 1.0906]
+[Epoch 55/100] [D loss: 0.5438] [G loss: 0.9812] [Validity_loss: 0.9812]
+[Epoch 56/100] [D loss: 0.4155] [G loss: 1.2523] [Validity_loss: 1.2523]
+[Epoch 57/100] [D loss: 0.4939] [G loss: 1.6168] [Validity_loss: 1.6168]
+[Epoch 58/100] [D loss: 0.4938] [G loss: 1.0934] [Validity_loss: 1.0934]
+[Epoch 59/100] [D loss: 0.3572] [G loss: 1.1649] [Validity_loss: 1.1649]
+[Epoch 60/100] [D loss: 0.3449] [G loss: 1.1197] [Validity_loss: 1.1197]
+[Epoch 61/100] [D loss: 0.3541] [G loss: 0.9787] [Validity_loss: 0.9787]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 62/100] [D loss: 0.3762] [G loss: 1.2934] [Validity_loss: 1.2934]
+[Epoch 63/100] [D loss: 0.4040] [G loss: 1.1522] [Validity_loss: 1.1522]
+[Epoch 64/100] [D loss: 0.8032] [G loss: 1.5468] [Validity_loss: 1.5468]
+[Epoch 65/100] [D loss: 0.4241] [G loss: 0.9736] [Validity_loss: 0.9736]
+[Epoch 66/100] [D loss: 0.3700] [G loss: 1.1043] [Validity_loss: 1.1043]
+[Epoch 67/100] [D loss: 0.4173] [G loss: 1.0977] [Validity_loss: 1.0977]
+[Epoch 68/100] [D loss: 0.3670] [G loss: 1.0939] [Validity_loss: 1.0939]
+[Epoch 69/100] [D loss: 0.3289] [G loss: 1.4840] [Validity_loss: 1.4840]
+[Epoch 70/100] [D loss: 0.3150] [G loss: 1.3901] [Validity_loss: 1.3901]
+[Epoch 71/100] [D loss: 0.4301] [G loss: 1.0409] [Validity_loss: 1.0409]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 72/100] [D loss: 0.4143] [G loss: 1.2161] [Validity_loss: 1.2161]
+[Epoch 73/100] [D loss: 0.4795] [G loss: 0.9108] [Validity_loss: 0.9108]
+[Epoch 74/100] [D loss: 0.1910] [G loss: 1.6761] [Validity_loss: 1.6761]
+[Epoch 75/100] [D loss: 0.3857] [G loss: 1.1677] [Validity_loss: 1.1677]
+[Epoch 76/100] [D loss: 0.3773] [G loss: 1.0329] [Validity_loss: 1.0329]
+[Epoch 77/100] [D loss: 0.2937] [G loss: 1.4883] [Validity_loss: 1.4883]
+[Epoch 78/100] [D loss: 0.3160] [G loss: 1.5647] [Validity_loss: 1.5647]
+[Epoch 79/100] [D loss: 0.5113] [G loss: 1.0791] [Validity_loss: 1.0791]
+[Epoch 80/100] [D loss: 0.4696] [G loss: 1.5141] [Validity_loss: 1.5141]
+[Epoch 81/100] [D loss: 0.4279] [G loss: 1.0072] [Validity_loss: 1.0072]
+Model and statistics saved to models/base_gan_model_temp.pt
+[Epoch 82/100] [D loss: 0.3751] [G loss: 1.0151] [Validity_loss: 1.0151]
+[Epoch 83/100] [D loss: 0.4679] [G loss: 1.2834] [Validity_loss: 1.2834]
+[Epoch 84/100] [D loss: 0.2911] [G loss: 1.5475] [Validity_loss: 1.5475]
+✅ Saved new best discriminator (epoch 85, d_loss=0.1847)
+[Epoch 85/100] [D loss: 0.1847] [G loss: 1.6465] [Validity_loss: 1.6465]
+[Epoch 86/100] [D loss: 0.3973] [G loss: 1.2864] [Validity_loss: 1.2864]
+[Epoch 87/100] [D loss: 0.3053] [G loss: 1.6304] [Validity_loss: 1.6304]
+[Epoch 88/100] [D loss: 0.2988] [G loss: 1.2121] [Validity_loss: 1.2121]
+[Epoch 89/100] [D loss: 0.2117] [G loss: 2.0220] [Validity_loss: 2.0220]
+[Epoch 90/100] [D loss: 0.3005] [G loss: 1.5823] [Validity_loss: 1.5823]
+[Epoch 91/100] [D loss: 0.2208] [G loss: 1.8010] [Validity_loss: 1.8010]
+Model and statistics saved to models/base_gan_model_temp.pt
+✅ Saved new best discriminator (epoch 92, d_loss=0.1378)
+[Epoch 92/100] [D loss: 0.1378] [G loss: 2.2923] [Validity_loss: 2.2923]
+[Epoch 93/100] [D loss: 0.2142] [G loss: 1.7320] [Validity_loss: 1.7320]
+[Epoch 94/100] [D loss: 0.3937] [G loss: 1.1502] [Validity_loss: 1.1502]
+[Epoch 95/100] [D loss: 0.2152] [G loss: 1.8636] [Validity_loss: 1.8636]
+[Epoch 96/100] [D loss: 0.3188] [G loss: 1.4327] [Validity_loss: 1.4327]
+[Epoch 97/100] [D loss: 0.2950] [G loss: 1.4453] [Validity_loss: 1.4453]
+[Epoch 98/100] [D loss: 0.4293] [G loss: 1.1984] [Validity_loss: 1.1984]
+[Epoch 99/100] [D loss: 0.4384] [G loss: 1.2991] [Validity_loss: 1.2991]
+[Epoch 100/100] [D loss: 0.5522] [G loss: 1.8450] [Validity_loss: 1.8450]
+This GAN trained on 872666 for 100.
+Model and statistics saved to models/class_gan_model_1_0919_1342.pt
