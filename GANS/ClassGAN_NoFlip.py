@@ -1,14 +1,12 @@
 #!/usr/bin/env python
 # coding: utf-8
+print("ClassGan ; NoFlip ; 0.1 Noise ; NNZLoss)
 
 # All imports
 from Imports import *
 from Helper import *
 from Preprocessing import *
 from Plotting import *
-
-print("ClassGan ; No NNZ ; Flip")
-
 
 # Load dataset and device
 device = 'cuda' if torch.cuda.is_available() else 'cpu'
@@ -210,30 +208,20 @@ if True:
                 # Generate the fake image
                 fake_img = generator(z_codings)
                 # print(f"Fake: {fake_img.shape}")
-    
-                # Generate eta-flipped data
-                flipped_z_codings = z_codings.clone()
-                flipped_z_codings[:, 1] *= -1
-
-                fake_flipped_img = generator(flipped_z_codings)
-    
+        
                 # Get predictions and labels
                 real_disc_codings = real_feat[:,:num]
-                real_flipped_disc_codings = real_flipped_feat[:,:num]
                 fake_disc_codings = z_codings[:,:num]
-                fake_flipped_disc_codings = flipped_z_codings[:,:num]
 
                 # Discriminator gets codings + image
                 real_pred = discriminator(real_img, real_disc_codings)
-                real_flipped_pred = discriminator(real_flipped_img, real_flipped_disc_codings)
                 fake_pred = discriminator(fake_img, fake_disc_codings)
-                fake_flipped_pred = discriminator(fake_flipped_img, fake_flipped_disc_codings)
     
-                preds = (torch.cat([real_pred, real_flipped_pred, fake_pred, fake_flipped_pred], dim=0)).squeeze(1)
+                preds = (torch.cat([real_pred, fake_pred], dim=0)).squeeze(1)
 
                 # Labels
-                ones = torch.ones(2*len(fake_pred))
-                zeros = torch.zeros(2*len(real_pred))
+                ones = torch.ones(len(fake_pred))
+                zeros = torch.zeros(len(real_pred))
                 labels = (torch.cat([ones, zeros], dim=0)).to(device)
     
                 # Discriminator loss is just its ability to distinguish
@@ -255,37 +243,28 @@ if True:
 
                 # Generate image
                 fake_img = generator(z_codings)
-    
-                # Generate eta-flipped data
-                flipped_z_codings = z_codings.clone()
-                flipped_z_codings[:, 1] *= -1
-
-                fake_flipped_img = generator(flipped_z_codings)
 
                 ## BCE Discriminator Loss
                 # Discriminator gets codings + generated image
                 fake_disc_codings = z_codings[:,:num]
-                fake_flipped_disc_codings = flipped_z_codings[:,:num]
 
                 # Get predictions and labels
                 fake_pred = discriminator(fake_img, fake_disc_codings)
-                fake_flipped_pred = discriminator(fake_flipped_img, fake_flipped_disc_codings)
 
                 target = torch.ones_like(fake_pred)
                 bce = nn.BCELoss()
-                validity_loss = bce(fake_pred, target) + bce(fake_flipped_pred, target)
+                validity_loss = bce(fake_pred, target)
     
                 ## Stat loss
-                # Compute statistics for original and flipped fake images
+                # Compute statistics for original fake images
                 fake_stats_orig = compute_fake_statistics(fake_img.to('cpu'), dists.to('cpu'))
-                fake_stats_flip = compute_fake_statistics(fake_flipped_img.to('cpu'), dists.to('cpu'))
                 
                 # Average the statistics
                 fake_stats = {
-                    'fake_dR_mean': 0.5 * (fake_stats_orig['fake_dR_mean'] + fake_stats_flip['fake_dR_mean']),
-                    'fake_dR_std': 0.5 * (fake_stats_orig['fake_dR_std'] + fake_stats_flip['fake_dR_std']),
-                    'fake_pixel_mean': 0.5 * (fake_stats_orig['fake_pixel_mean'] + fake_stats_flip['fake_pixel_mean']),
-                    'fake_pixel_std': 0.5 * (fake_stats_orig['fake_pixel_std'] + fake_stats_flip['fake_pixel_std']),
+                    'fake_dR_mean': (fake_stats_orig['fake_dR_mean']),
+                    'fake_dR_std': (fake_stats_orig['fake_dR_std']),
+                    'fake_pixel_mean': (fake_stats_orig['fake_pixel_mean']),
+                    'fake_pixel_std': (fake_stats_orig['fake_pixel_std']),
                 }
                 
                 # Move to device
@@ -320,7 +299,7 @@ if True:
                 nnz_loss = torch.nn.MSELoss()(fake_nnz, real_nnz)
     
                 
-                # Total generator loss is the average of the discriminator's predictions of the original and flipped data
+                # Total generator loss is the discriminator's predictions of the original
                 # + number of non-zero pixels loss
                 # + the difference between input and output dR and pixel statistics
     
@@ -328,7 +307,7 @@ if True:
                 beta = .0035
                 chi = 2
     
-                g_loss = (alpha*validity_loss + chi*stat_loss)
+                g_loss = (alpha*validity_loss + beta*nnz_loss + chi*stat_loss)
 
                 g_loss.backward()
                 optimizer_G.step()
@@ -340,7 +319,7 @@ if True:
         if g_loss.item() < best_g_loss:
             best_g_loss = g_loss.item()
             timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/best_GAN_generator_{n_epochs}.pt"
+            save_path = f"models/best_GAN_generator_noflip_{n_epochs}.pt"
             torch.save({
                 "generator_state_dict": generator.state_dict(),
                 "discriminator_state_dict": discriminator.state_dict(),
@@ -354,7 +333,7 @@ if True:
         if d_loss.item() < best_d_loss:
             best_d_loss = d_loss.item()
             timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/best_GAN_discriminator_{n_epochs}.pt"
+            save_path = f"models/best_GAN_discriminator_noflip_{n_epochs}.pt"
             torch.save({
                 "generator_state_dict": generator.state_dict(),
                 "discriminator_state_dict": discriminator.state_dict(),
@@ -369,7 +348,7 @@ if True:
         if epoch % 10 == 0:
             # Save model states and tracked data in a temp file during training
             timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/temp_gan_{n_epochs}.pt"
+            save_path = f"models/temp_noflip_{n_epochs}.pt"
             torch.save({
                 "generator_state_dict": generator.state_dict(),
                 "discriminator_state_dict": discriminator.state_dict(),
@@ -392,7 +371,7 @@ if save:
     timestamp = datetime.now().strftime("%m%d_%H%M")
     
     # Save model states and tracked data in a single file
-    save_path = f"models/class_gan_model_{n_epochs}_{timestamp}.pt"
+    save_path = f"models/class_gan_noflip_{n_epochs}_{timestamp}.pt"
     torch.save({
         "generator_state_dict": generator.state_dict(),
         "discriminator_state_dict": discriminator.state_dict(),

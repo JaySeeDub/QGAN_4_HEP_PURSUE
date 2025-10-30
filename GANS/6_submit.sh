@@ -12,4 +12,4 @@ export SLURM_CPU_BIND="cores"
 module load conda
 conda activate myenv
 
-srun python -u ./ClassGAN.py
+srun python -u ./ClassGAN_NoFlip.py

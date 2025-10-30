@@ -27,3 +27,6 @@ from torchview import draw_graph
 
 from sklearn.datasets import make_classification
 from imblearn.over_sampling import SMOTENC
+from torch.utils.data import Subset
+from torchmetrics.image.kid import KernelInceptionDistance
+from torchmetrics.image.fid import FrechetInceptionDistance

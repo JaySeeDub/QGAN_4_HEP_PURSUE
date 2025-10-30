@@ -3,6 +3,7 @@
 
 # In[1]:
 
+print("Noiseless; NNZLoss ; Signal dataset ; Tanh")
 
 # All imports
 from Imports import *
@@ -32,7 +33,7 @@ class Generator(nn.Module):
         super().__init__()
         self.latent_dim = latent_dim
 
-        self.noise = GaussianNoise(sigma=0.1)
+        self.noise = GaussianNoise(sigma=0.0)
 
         self.feature_gen = nn.Sequential(
             nn.Linear(9, 64),
@@ -69,7 +70,10 @@ class Generator(nn.Module):
         # print(img.shape)
         img = self.image_gen(img)
         # print(img.shape)
-        img = soft_threshold(img, threshold=0.001, sharpness=1000.0)
+        # img = soft_threshold(img, threshold=0.001, sharpness=1000.0)
+        img = nn.Tanh()(img)
+        img = nn.ReLU()(img)
+        # img = MaxReLU(img)
         return img
 
 class Discriminator(nn.Module):
@@ -139,14 +143,39 @@ n_events = int(1 * jet_mass_data['image'].shape[0])
 
 latent_dim = 256
 lr = 1e-3
-n_epochs = 100
+n_epochs = 200
 num = 4
 
 dataset = JetDataset(jet_mass_data, n_events)
 smote_dataset = JetDataset(jet_mass_data, int(1 * n_events))
 
+# Split into signal and background
+signal_mask = dataset.features[:0] == 1
+background_mask = dataset.features[:0] == 0
+smote_signal_mask = smote_dataset.features[:0] == 1
+smote_background_mask = smote_dataset.features[:0] == 0
+
+train_on = "signal"
+# train_on = "background"
+
+if train_on == "signal":
+    mask = signal_mask
+    smote_mask = smote_signal_mask
+else:
+    mask = background_mask
+    smote_mask = smote_background_mask
+    
+indices = np.where(mask)[0]
+smote_indices = np.where(smote_mask)[0]
+dataset = Subset(dataset, indices).dataset
+smote_dataset = Subset(smote_dataset, smote_indices).dataset
+
+# Save the datasets
+torch.save(dataset, "dataset.pt")
+torch.save(smote_dataset, "smote_dataset.pt")
+
 real_data = smote_dataset.features
-minority = smotenc_oversample(real_data, n_samples=n_events, categorical_features=[0])
+minority = smotenc_oversample(real_data, n_samples= n_events, categorical_features=[0])
 minority = torch.tensor(minority, dtype=torch.float32)
 
 dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
@@ -155,10 +184,6 @@ sampleloader = DataLoader(minority, batch_size=batch_size, shuffle=True, drop_la
 print("Number of samples:", len(dataset))
 print("Image shape:", dataset.images.shape)
 print("Feature shape:", dataset.features.shape)
-
-
-# In[5]:
-
 
 # Initialize models
 generator = Generator(latent_dim).to(device)
@@ -194,36 +219,6 @@ params_D = sum(p.numel() for p in discriminator.parameters() if p.requires_grad)
 print(f"Discriminator Params: {params_D}")
 print(f"Total Params: {params_D+params_G}")
 
-
-# In[ ]:
-
-
-## Load a previous model
-load = False
-
-if load:
-    load_path = "models/smote_model_temp.pt" # Path to load your model
-    # load_path = "models/class_gan_model_m21_1003.pt"  # Sample model
-    
-    # Load the checkpoint
-    checkpoint = torch.load(load_path)
-    
-    # Restore model weights
-    generator.load_state_dict(checkpoint["generator_state_dict"])
-    discriminator.load_state_dict(checkpoint["discriminator_state_dict"])
-    
-    # Optionally restore tracking data
-    g_losses = checkpoint["g_losses"]
-    d_losses = checkpoint["d_losses"]
-    
-    stats_dict = checkpoint["stats_dict"]
-    
-    print(f"Loaded model from {load_path}")
-
-
-# In[ ]:
-
-
 # Training loop
 if True:
     for epoch in range(n_epochs):
@@ -239,9 +234,9 @@ if True:
     
             # Codings will be label, eta, pT, mass that get passed directly to the discriminator
             # All feature values get passed to the generator, then the output image passed to the discriminator
-    
+
             # Discriminator training
-            if i % 3 == 0:
+            if i % 4 == 0:
                 optimizer_D.zero_grad()
                 discriminator.train()
                 # Generate fake samples
@@ -278,7 +273,7 @@ if True:
                 labels = (torch.cat([ones, zeros], dim=0)).to(device)
     
                 # Discriminator loss is just its ability to distinguish
-                d_loss = torch.nn.BCELoss()(preds, labels)
+                d_loss = torch.nn.BCE()(preds, labels)
 
                 d_loss.backward()
                 
@@ -312,7 +307,7 @@ if True:
                 fake_flipped_pred = discriminator(fake_flipped_img, fake_flipped_disc_codings)
 
                 target = torch.ones_like(fake_pred)
-                bce = nn.BCELoss()
+                bce = nn.BCE()
                 validity_loss = bce(fake_pred, target) + bce(fake_flipped_pred, target)
     
                 ## Stat loss
@@ -350,10 +345,10 @@ if True:
                 # Statistical Loss
                 
                 stat_loss = torch.nn.L1Loss()(real_dR_mean, fake_dR_mean) / .004
-                stat_loss += torch.nn.L1Loss()(real_dR_std, fake_dR_std) / .025
-                stat_loss += torch.nn.L1Loss()(real_pixel_mean, fake_pixel_mean) / .003
-                stat_loss += torch.nn.L1Loss()(real_pixel_std, fake_pixel_std) / .03
-                stat_loss /= 4
+                stat_loss = stat_loss + torch.nn.L1Loss()(real_dR_std, fake_dR_std) / .025
+                stat_loss = stat_loss + torch.nn.L1Loss()(real_pixel_mean, fake_pixel_mean) / .003
+                stat_loss = stat_loss + torch.nn.L1Loss()(real_pixel_std, fake_pixel_std) / .03
+                stat_loss = stat_loss / 4
                 
                 ## Number non-zero loss
                 fake_nnz = soft_count_nonzero(fake_img, threshold=3e-3, sharpness=10000.0)
@@ -366,17 +361,22 @@ if True:
                 # + the difference between input and output dR and pixel statistics
     
                 alpha = .225
-                beta = .0035
+                beta = 0.0025
                 chi = 2
-    
+
+                # try calling .backward on each loss separately
                 g_loss = (alpha*validity_loss + beta*nnz_loss + chi*stat_loss)
 
                 g_loss.backward()
                 optimizer_G.step()
     
         g_losses.append(g_loss.item())
-        d_losses.append(d_loss.item())
 
+        try:
+            d_losses.append(d_loss.item())
+        except:
+            pass
+            
         print(f"[Epoch {epoch+1}/{n_epochs}] [D loss: {d_losses[-1]:.4f}] [G loss: {g_losses[-1]:.4f}] [Validity_loss: {alpha*validity_loss:.4f}] \n [Stat_loss: {chi*stat_loss:.4f}] [NNZ_loss: {beta*nnz_loss:.4f}]") 
 
 
@@ -472,6 +472,3 @@ test_smote_samples(generator, discriminator, dataset, minority, batch_size=10000
 #     compare_discriminator=True
 
 plot_metrics(g_losses, d_losses)
-
-
-

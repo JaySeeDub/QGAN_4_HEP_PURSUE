@@ -12,4 +12,4 @@ export SLURM_CPU_BIND="cores"
 module load conda
 conda activate myenv
 
-srun python -u ./test_smoteGAN.py
+srun python -u ./onlyStats.py

@@ -1,13 +1,17 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+print("only stat loss")
+
+
 # All imports
 from Imports import *
 from Helper import *
 from Preprocessing import *
 from Plotting import *
 
-print("ClassGan ; No NNZ ; Flip")
+
+# In[2]:
 
 
 # Load dataset and device
@@ -18,7 +22,11 @@ jet_mass_data = HDF5File(jet_images_path, 'r')
 print(jet_mass_data.keys())
 print(jet_mass_data['image'].shape)
 
-# Generator with Quantum Layer
+
+# In[3]:
+
+
+# Generator
 class Generator(nn.Module):
     def __init__(self, latent_dim=256):
         super().__init__()
@@ -34,26 +42,22 @@ class Generator(nn.Module):
             self.noise
         )
 
-        self.image_gen1 = nn.Sequential(
+        self.image_gen = nn.Sequential(
             nn.ConvTranspose2d(256, 128, kernel_size=4, stride=2, padding=1),  # 1x1 → 2x2
             nn.BatchNorm2d(128),
             nn.ReLU(True),
             nn.Dropout(0.2),
-        )
-        self.image_gen2 = nn.Sequential(
+
             nn.ConvTranspose2d(128, 64, kernel_size=4, stride=2, padding=1),   # 2x2 → 4x4
             nn.BatchNorm2d(64),
             nn.ReLU(True),
             nn.Dropout(0.2),
-        )
-        self.image_gen3 = nn.Sequential(
+
             nn.ConvTranspose2d(64, 32, kernel_size=4, stride=2, padding=1),     # 4x4 → 8x8
             nn.BatchNorm2d(32),
             nn.ReLU(True),
             nn.Dropout(0.2),
-        )
 
-        self.image_gen4 = nn.Sequential(
             nn.ConvTranspose2d(32, 1, kernel_size=4, stride=2, padding=1),     # 8x8 → 16x16
             nn.Sigmoid()
         )
@@ -63,17 +67,10 @@ class Generator(nn.Module):
         # print(img.shape)
         img = img.view(-1, 256, 1, 1)
         # print(img.shape)
-        img = self.image_gen1(img)
-        # print(img.shape)
-        img = self.image_gen2(img)
-        # print(img.shape)
-        img = self.image_gen3(img)
-        # print(img.shape)
-        img = self.image_gen4(img)
+        img = self.image_gen(img)
         # print(img.shape)
         img = soft_threshold(img, threshold=0.001, sharpness=1000.0)
         return img
-
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -133,19 +130,48 @@ class Discriminator(nn.Module):
         return prob  # Shape: (batch_size, 1)
 
 
+# In[ ]:
+
+
 # Define variable and dataset
 batch_size = 256
-n_epochs = 300
 n_events = int(1 * jet_mass_data['image'].shape[0])
 
 latent_dim = 256
 lr = 1e-3
+n_epochs = 100
 num = 4
 
 dataset = JetDataset(jet_mass_data, n_events)
-dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+smote_dataset = JetDataset(jet_mass_data, int(1 * n_events))
 
-kdes = feature_distributions(dataset)
+# Split into signal and background
+signal_mask = dataset.features[:0] == 1
+background_mask = dataset.features[:0] == 0
+smote_signal_mask = smote_dataset.features[:0] == 1
+smote_background_mask = smote_dataset.features[:0] == 0
+
+train_on = "signal"
+# train_on = "background"
+
+if train_on == "signal":
+    mask = signal_mask
+    smote_mask = smote_signal_mask
+else:
+    mask = background_mask
+    smote_mask = smote_background_mask
+    
+indices = np.where(mask)[0]
+smote_indices = np.where(smote_mask)[0]
+dataset = Subset(dataset, indices).dataset
+smote_dataset = Subset(smote_dataset, smote_indices).dataset
+
+real_data = smote_dataset.features
+minority = smotenc_oversample(real_data, n_samples= n_events, categorical_features=[0])
+minority = torch.tensor(minority, dtype=torch.float32)
+
+dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, drop_last=True)
+sampleloader = DataLoader(minority, batch_size=batch_size, shuffle=True, drop_last=True)
 
 print("Number of samples:", len(dataset))
 print("Image shape:", dataset.images.shape)
@@ -178,8 +204,42 @@ stats_dict = {
 
 dists = compute_distance_map(16,16).to(device)
 
-best_g_loss = float("inf")
-best_d_loss = float("inf")
+params_G = sum(p.numel() for p in generator.parameters() if p.requires_grad)
+print(f"Generator Params: {params_G}")
+
+params_D = sum(p.numel() for p in discriminator.parameters() if p.requires_grad)
+print(f"Discriminator Params: {params_D}")
+print(f"Total Params: {params_D+params_G}")
+
+
+# In[ ]:
+
+
+## Load a previous model
+load = False
+
+if load:
+    load_path = "models/smote_model_temp.pt" # Path to load your model
+    # load_path = "models/class_gan_model_m21_1003.pt"  # Sample model
+    
+    # Load the checkpoint
+    checkpoint = torch.load(load_path)
+    
+    # Restore model weights
+    generator.load_state_dict(checkpoint["generator_state_dict"])
+    discriminator.load_state_dict(checkpoint["discriminator_state_dict"])
+    
+    # Optionally restore tracking data
+    g_losses = checkpoint["g_losses"]
+    d_losses = checkpoint["d_losses"]
+    
+    stats_dict = checkpoint["stats_dict"]
+    
+    print(f"Loaded model from {load_path}")
+
+
+# In[ ]:
+
 
 # Training loop
 if True:
@@ -202,10 +262,8 @@ if True:
                 optimizer_D.zero_grad()
                 discriminator.train()
                 # Generate fake samples
-                # Should be very easy to modify which values are passed as codings
-                z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
-                                      sample_fit_noise(kdes, num_samples=batch_size)[:,:]],
-                                      dim=1).to(device)
+                z_codings = next(iter(sampleloader)).to(device)
+                z_codings = z_codings.to(dtype=torch.float32, device=device)
 
                 # Generate the fake image
                 fake_img = generator(z_codings)
@@ -238,8 +296,9 @@ if True:
     
                 # Discriminator loss is just its ability to distinguish
                 d_loss = torch.nn.BCELoss()(preds, labels)
-    
+
                 d_loss.backward()
+                
                 optimizer_D.step()
     
             # Generator Training
@@ -248,11 +307,9 @@ if True:
                 generator.train()
                 
                 # Generate fake data
-                # Should be very easy to modify which values are passed as codings
-                z_codings = torch.cat([torch.randint(0, 2, (batch_size, 1)), 
-                                      sample_fit_noise(kdes, num_samples=batch_size)[:,:]],
-                                      dim=1).to(device)
-
+                z_codings = next(iter(sampleloader))
+                z_codings = z_codings.to(dtype=torch.float32, device=device)
+    
                 # Generate image
                 fake_img = generator(z_codings)
     
@@ -306,13 +363,14 @@ if True:
                     'real_pixel_mean': real_pixel_mean,
                     'real_pixel_std': real_pixel_std
                 }
-    
-                # Statistical loss
+                
+                # Statistical Loss
+                
                 stat_loss = torch.nn.L1Loss()(real_dR_mean, fake_dR_mean) / .004
-                stat_loss = stat_loss + torch.nn.L1Loss()(real_dR_std, fake_dR_std) / .025
-                stat_loss = stat_loss + torch.nn.L1Loss()(real_pixel_mean, fake_pixel_mean) / .003
-                stat_loss = stat_loss + torch.nn.L1Loss()(real_pixel_std, fake_pixel_std) / .03
-                stat_loss = stat_loss / 4
+                stat_loss += torch.nn.L1Loss()(real_dR_std, fake_dR_std) / .025
+                stat_loss += torch.nn.L1Loss()(real_pixel_mean, fake_pixel_mean) / .003
+                stat_loss += torch.nn.L1Loss()(real_pixel_std, fake_pixel_std) / .03
+                stat_loss /= 4
                 
                 ## Number non-zero loss
                 fake_nnz = soft_count_nonzero(fake_img, threshold=3e-3, sharpness=10000.0)
@@ -326,9 +384,9 @@ if True:
     
                 alpha = .225
                 beta = .0035
-                chi = 2
+                chi = 4
     
-                g_loss = (alpha*validity_loss + chi*stat_loss)
+                g_loss = (chi*stat_loss)
 
                 g_loss.backward()
                 optimizer_G.step()
@@ -336,40 +394,12 @@ if True:
         g_losses.append(g_loss.item())
         d_losses.append(d_loss.item())
 
-        # Save best generator
-        if g_loss.item() < best_g_loss:
-            best_g_loss = g_loss.item()
-            timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/best_GAN_generator_{n_epochs}.pt"
-            torch.save({
-                "generator_state_dict": generator.state_dict(),
-                "discriminator_state_dict": discriminator.state_dict(),
-                "g_losses": g_losses,
-                "d_losses": d_losses,
-                "stats_dict": stats_dict
-            }, save_path)
-            print(f"✅ Saved new best generator (epoch {epoch+1}, g_loss={best_g_loss:.4f})")
-            
-        # Save best discriminator
-        if d_loss.item() < best_d_loss:
-            best_d_loss = d_loss.item()
-            timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/best_GAN_discriminator_{n_epochs}.pt"
-            torch.save({
-                "generator_state_dict": generator.state_dict(),
-                "discriminator_state_dict": discriminator.state_dict(),
-                "g_losses": g_losses,
-                "d_losses": d_losses,
-                "stats_dict": stats_dict
-            }, save_path)
-            print(f"✅ Saved new best discriminator (epoch {epoch+1}, d_loss={best_d_loss:.4f})")
-
         print(f"[Epoch {epoch+1}/{n_epochs}] [D loss: {d_losses[-1]:.4f}] [G loss: {g_losses[-1]:.4f}] [Validity_loss: {alpha*validity_loss:.4f}] \n [Stat_loss: {chi*stat_loss:.4f}] [NNZ_loss: {beta*nnz_loss:.4f}]") 
+
 
         if epoch % 10 == 0:
             # Save model states and tracked data in a temp file during training
-            timestamp = datetime.now().strftime("%m%d_%H%M")
-            save_path = f"models/temp_gan_{n_epochs}.pt"
+            save_path = f"models/smote_model_temp.pt"
             torch.save({
                 "generator_state_dict": generator.state_dict(),
                 "discriminator_state_dict": discriminator.state_dict(),
@@ -379,6 +409,10 @@ if True:
             }, save_path)
 
             print(f"Model and statistics saved to {save_path}")
+
+
+# In[19]:
+
 
 ## Save Model
 # Create output directory if it doesn't exist
@@ -392,7 +426,7 @@ if save:
     timestamp = datetime.now().strftime("%m%d_%H%M")
     
     # Save model states and tracked data in a single file
-    save_path = f"models/class_gan_model_{n_epochs}_{timestamp}.pt"
+    save_path = f"models/smote_model_{timestamp}.pt"
     torch.save({
         "generator_state_dict": generator.state_dict(),
         "discriminator_state_dict": discriminator.state_dict(),
@@ -404,16 +438,44 @@ if save:
     print(f"Model and statistics saved to {save_path}")
 
 
-# In[ ]:
+# In[20]:
 
 
 plot_real_samples(dataset)
 
 
-# In[16]:
+# In[6]:
 
 
-test_generated_samples(generator, discriminator, dataset, kdes, batch_size=100000)
+## Load a previous model
+load = False
+
+if load:
+    load_path = "models/class_gan_model_1_0920_1340.pt" # Path to load your model
+    # load_path = "models/best_smote_discriminator_100.pt" # Path to load your model
+    
+    # load_path = "models/class_gan_model_m21_1003.pt"  # Sample model
+    
+    # Load the checkpoint
+    checkpoint = torch.load(load_path)
+    
+    # Restore model weights
+    generator.load_state_dict(checkpoint["generator_state_dict"])
+    discriminator.load_state_dict(checkpoint["discriminator_state_dict"])
+    
+    # Optionally restore tracking data
+    g_losses = checkpoint["g_losses"]
+    d_losses = checkpoint["d_losses"]
+    
+    stats_dict = checkpoint["stats_dict"]
+    
+    print(f"Loaded model from {load_path}")
+
+
+# In[7]:
+
+
+test_smote_samples(generator, discriminator, dataset, minority, batch_size=100000)
 
 # Optional args:
 #     generator,
@@ -429,5 +491,4 @@ test_generated_samples(generator, discriminator, dataset, kdes, batch_size=10000
 plot_metrics(g_losses, d_losses)
 
 
-print(f"This GAN trained on {n_events} for {n_epochs}.")
 
