@@ -1,0 +1,44 @@
+Noiseless; NNZLoss ; Signal dataset ; Tanh
+<KeysViewHDF5 ['image', 'jet_delta_R', 'jet_eta', 'jet_mass', 'jet_phi', 'jet_pt', 'signal', 'tau_1', 'tau_2', 'tau_21', 'tau_3', 'tau_32']>
+(872666, 25, 25)
+Image shape: torch.Size([872666, 16, 16])
+dR Mean: torch.Size([872666])
+dR STD: torch.Size([872666])
+Pixel Mean: torch.Size([872666])
+Pixel STD: torch.Size([872666])
+ΔR min: 0.0
+ΔR max: 2.4713454246520996
+ΔR mean min: 0.003572926390916109
+ΔR mean max: 0.015763528645038605
+ΔR std min: 0.017520317807793617
+ΔR std max: 0.16022197902202606
+Weights (pixel intensity) min: 0.0
+Weights (pixel intensity) max: 1.0
+Pixel mean min: 0.0028264394495636225
+Pixel mean max: 0.004322932101786137
+Pixel std min: 0.008012386038899422
+Pixel std max: 0.06249340996146202
+Image shape: torch.Size([872666, 16, 16])
+dR Mean: torch.Size([872666])
+dR STD: torch.Size([872666])
+Pixel Mean: torch.Size([872666])
+Pixel STD: torch.Size([872666])
+ΔR min: 0.0
+ΔR max: 2.4713454246520996
+ΔR mean min: 0.003572926390916109
+ΔR mean max: 0.015763528645038605
+ΔR std min: 0.017520317807793617
+ΔR std max: 0.16022197902202606
+Weights (pixel intensity) min: 0.0
+Weights (pixel intensity) max: 1.0
+Pixel mean min: 0.0028264394495636225
+Pixel mean max: 0.004322932101786137
+Pixel std min: 0.008012386038899422
+Pixel std max: 0.06249340996146202
+(872666, 9)
+Number of samples: 872666
+Image shape: torch.Size([872666, 16, 16])
+Feature shape: torch.Size([872666, 9])
+Generator Params: 707105
+Discriminator Params: 976705
+Total Params: 1683810

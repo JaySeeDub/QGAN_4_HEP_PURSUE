@@ -3,7 +3,7 @@
 
 # In[1]:
 
-print("Noiseless; NNZLoss ; Signal dataset ; Tanh")
+print("Noiseless; No NNZLoss ; Signal dataset ; Tanh")
 
 # All imports
 from Imports import *
@@ -365,7 +365,7 @@ if True:
                 chi = 2
 
                 # try calling .backward on each loss separately
-                g_loss = (alpha*validity_loss + beta*nnz_loss + chi*stat_loss)
+                g_loss = (alpha*validity_loss + chi*stat_loss)
 
                 g_loss.backward()
                 optimizer_G.step()

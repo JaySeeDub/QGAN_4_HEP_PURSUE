@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
-print("ClassGan ; NoFlip ; 0.1 Noise ; NNZLoss)
+print("ClassGan ; NoFlip ; 0.1 Noise ; NNZLoss")
 
 # All imports
 from Imports import *

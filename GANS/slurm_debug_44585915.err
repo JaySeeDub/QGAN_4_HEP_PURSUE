@@ -1,0 +1,6 @@
+Traceback (most recent call last):
+  File "/global/u1/w/webbj/ICLR/GANS/./smoteGAN.py", line 276, in <module>
+    d_loss = torch.nn.BCE()(preds, labels)
+AttributeError: module 'torch.nn' has no attribute 'BCE'
+srun: error: nid008384: task 0: Exited with exit code 1
+srun: Terminating StepId=44585915.0

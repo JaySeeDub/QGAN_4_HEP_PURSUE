@@ -1,0 +1,6 @@
+  File "/global/u1/w/webbj/ICLR/GANS/./ClassGAN_NoFlip.py", line 3
+    print("ClassGan ; NoFlip ; 0.1 Noise ; NNZLoss)
+srun: error: nid001845: task 0: Exited with exit code 1
+srun: Terminating StepId=44583926.0
+          ^
+SyntaxError: unterminated string literal (detected at line 3)
