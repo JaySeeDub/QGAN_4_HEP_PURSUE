@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+
+[project]
+name = "HEPGAN"
+version = "0.1.0"
+description = "A physics-informed GAN for jet-image generation with ΔR, pixel-stat, and NNZ constraints"
+authors = [{ name = "Jesse Webb" }]
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies = [
+    # Core scientific stack
+    "torch>=2.2",
+    "numpy>=1.26",
+    "pandas>=2.0",
+    "matplotlib>=3.8",
+    
+    # KDE + SMOTE + preprocessing
+    "scikit-learn>=1.4",
+    "imbalanced-learn>=0.12",
+
+    # HDF5 dataset loading
+    "h5py>=3.10",
+
+    # Plotting / visualization
+    "seaborn>=0.13",
+
+    # CLI tool for running training/eval scripts
+    "typer>=0.12",
+
+    # Optional: quantum backends
+    "pennylane>=0.36",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "pytest-cov>=5.0",
+    "mypy>=1.10",
+    "ruff>=0.6",
+    "types-PyYAML",
+]
+
+
+[tool.ruff]
+line-length = 100
+select = ["E", "F", "I", "B", "UP"]
+
+
+[tool.mypy]
+python_version = "3.10"
+strict = true
+warn_unused_ignores = true
+
+
+[tool.setuptools.packages.find]
+where = ["src"]

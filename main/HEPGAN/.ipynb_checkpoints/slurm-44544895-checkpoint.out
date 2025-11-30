@@ -1,0 +1,185 @@
+Noiseless; NNZLoss ; Signal dataset ; Soft_Thresh
+<KeysViewHDF5 ['image', 'jet_delta_R', 'jet_eta', 'jet_mass', 'jet_phi', 'jet_pt', 'signal', 'tau_1', 'tau_2', 'tau_21', 'tau_3', 'tau_32']>
+(872666, 25, 25)
+Image shape: torch.Size([872666, 16, 16])
+dR Mean: torch.Size([872666])
+dR STD: torch.Size([872666])
+Pixel Mean: torch.Size([872666])
+Pixel STD: torch.Size([872666])
+ΔR min: 0.0
+ΔR max: 2.4713454246520996
+ΔR mean min: 0.003572926390916109
+ΔR mean max: 0.015763528645038605
+ΔR std min: 0.017520317807793617
+ΔR std max: 0.16022197902202606
+Weights (pixel intensity) min: 0.0
+Weights (pixel intensity) max: 1.0
+Pixel mean min: 0.0028264394495636225
+Pixel mean max: 0.004322932101786137
+Pixel std min: 0.008012386038899422
+Pixel std max: 0.06249340996146202
+Image shape: torch.Size([872666, 16, 16])
+dR Mean: torch.Size([872666])
+dR STD: torch.Size([872666])
+Pixel Mean: torch.Size([872666])
+Pixel STD: torch.Size([872666])
+ΔR min: 0.0
+ΔR max: 2.4713454246520996
+ΔR mean min: 0.003572926390916109
+ΔR mean max: 0.015763528645038605
+ΔR std min: 0.017520317807793617
+ΔR std max: 0.16022197902202606
+Weights (pixel intensity) min: 0.0
+Weights (pixel intensity) max: 1.0
+Pixel mean min: 0.0028264394495636225
+Pixel mean max: 0.004322932101786137
+Pixel std min: 0.008012386038899422
+Pixel std max: 0.06249340996146202
+(872666, 9)
+Number of samples: 872666
+Image shape: torch.Size([872666, 16, 16])
+Feature shape: torch.Size([872666, 9])
+Generator Params: 707105
+Discriminator Params: 976705
+Total Params: 1683810
+[Epoch 1/100] [D loss: 0.6591] [G loss: 2.3548] [Validity_loss: 0.3590] 
+ [Stat_loss: 1.8508] [NNZ_loss: 0.1450]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 2/100] [D loss: 0.5431] [G loss: 1.2716] [Validity_loss: 0.3827] 
+ [Stat_loss: 0.7488] [NNZ_loss: 0.1402]
+[Epoch 3/100] [D loss: 0.4885] [G loss: 1.2452] [Validity_loss: 0.4856] 
+ [Stat_loss: 0.6200] [NNZ_loss: 0.1397]
+[Epoch 4/100] [D loss: 0.5242] [G loss: 1.5260] [Validity_loss: 0.4267] 
+ [Stat_loss: 0.9239] [NNZ_loss: 0.1754]
+[Epoch 5/100] [D loss: 0.6859] [G loss: 2.2675] [Validity_loss: 0.3384] 
+ [Stat_loss: 1.7939] [NNZ_loss: 0.1352]
+[Epoch 6/100] [D loss: 0.6420] [G loss: 1.2129] [Validity_loss: 0.3668] 
+ [Stat_loss: 0.6843] [NNZ_loss: 0.1618]
+[Epoch 7/100] [D loss: 0.5342] [G loss: 1.2769] [Validity_loss: 0.4742] 
+ [Stat_loss: 0.6504] [NNZ_loss: 0.1523]
+[Epoch 8/100] [D loss: 0.7295] [G loss: 1.6300] [Validity_loss: 0.3723] 
+ [Stat_loss: 1.0756] [NNZ_loss: 0.1821]
+[Epoch 9/100] [D loss: 0.5276] [G loss: 1.8537] [Validity_loss: 0.4158] 
+ [Stat_loss: 1.2811] [NNZ_loss: 0.1568]
+[Epoch 10/100] [D loss: 0.4388] [G loss: 1.5695] [Validity_loss: 0.5727] 
+ [Stat_loss: 0.8518] [NNZ_loss: 0.1449]
+[Epoch 11/100] [D loss: 0.6144] [G loss: 1.2603] [Validity_loss: 0.3661] 
+ [Stat_loss: 0.7179] [NNZ_loss: 0.1762]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 12/100] [D loss: 0.5894] [G loss: 1.2302] [Validity_loss: 0.4627] 
+ [Stat_loss: 0.6328] [NNZ_loss: 0.1347]
+[Epoch 13/100] [D loss: 0.4155] [G loss: 22.5329] [Validity_loss: 0.6434] 
+ [Stat_loss: 21.7438] [NNZ_loss: 0.1457]
+[Epoch 14/100] [D loss: 0.4719] [G loss: 1.2669] [Validity_loss: 0.5009] 
+ [Stat_loss: 0.6203] [NNZ_loss: 0.1457]
+[Epoch 15/100] [D loss: 0.4523] [G loss: 1.6241] [Validity_loss: 0.5253] 
+ [Stat_loss: 0.9332] [NNZ_loss: 0.1656]
+[Epoch 16/100] [D loss: 0.4283] [G loss: 1.3358] [Validity_loss: 0.5883] 
+ [Stat_loss: 0.5916] [NNZ_loss: 0.1558]
+[Epoch 17/100] [D loss: 0.4500] [G loss: 1.2543] [Validity_loss: 0.5085] 
+ [Stat_loss: 0.5686] [NNZ_loss: 0.1772]
+[Epoch 18/100] [D loss: 0.5002] [G loss: 1.2399] [Validity_loss: 0.5101] 
+ [Stat_loss: 0.5875] [NNZ_loss: 0.1424]
+[Epoch 19/100] [D loss: 0.6440] [G loss: 1.6513] [Validity_loss: 0.2825] 
+ [Stat_loss: 1.2314] [NNZ_loss: 0.1374]
+[Epoch 20/100] [D loss: 0.5842] [G loss: 1.1772] [Validity_loss: 0.4274] 
+ [Stat_loss: 0.6042] [NNZ_loss: 0.1456]
+[Epoch 21/100] [D loss: 0.4457] [G loss: 1.3295] [Validity_loss: 0.5841] 
+ [Stat_loss: 0.5669] [NNZ_loss: 0.1785]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 22/100] [D loss: 0.4775] [G loss: 1.3130] [Validity_loss: 0.5058] 
+ [Stat_loss: 0.6595] [NNZ_loss: 0.1478]
+[Epoch 23/100] [D loss: 0.4558] [G loss: 1.2601] [Validity_loss: 0.5507] 
+ [Stat_loss: 0.5435] [NNZ_loss: 0.1658]
+[Epoch 24/100] [D loss: 0.4040] [G loss: 1.3699] [Validity_loss: 0.5572] 
+ [Stat_loss: 0.6892] [NNZ_loss: 0.1236]
+[Epoch 25/100] [D loss: 0.5564] [G loss: 1.6123] [Validity_loss: 0.4144] 
+ [Stat_loss: 1.0558] [NNZ_loss: 0.1421]
+[Epoch 26/100] [D loss: 0.3445] [G loss: 1.4767] [Validity_loss: 0.7428] 
+ [Stat_loss: 0.5599] [NNZ_loss: 0.1740]
+[Epoch 27/100] [D loss: 0.3930] [G loss: 1.3206] [Validity_loss: 0.5804] 
+ [Stat_loss: 0.5717] [NNZ_loss: 0.1685]
+[Epoch 28/100] [D loss: 0.4109] [G loss: 1.2928] [Validity_loss: 0.6308] 
+ [Stat_loss: 0.5235] [NNZ_loss: 0.1385]
+[Epoch 29/100] [D loss: 0.2895] [G loss: 1.6181] [Validity_loss: 0.8319] 
+ [Stat_loss: 0.6292] [NNZ_loss: 0.1571]
+[Epoch 30/100] [D loss: 0.4352] [G loss: 1.2310] [Validity_loss: 0.5342] 
+ [Stat_loss: 0.5607] [NNZ_loss: 0.1361]
+[Epoch 31/100] [D loss: 0.3297] [G loss: 1.7219] [Validity_loss: 0.9593] 
+ [Stat_loss: 0.5977] [NNZ_loss: 0.1649]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 32/100] [D loss: 0.2670] [G loss: 1.8506] [Validity_loss: 0.9477] 
+ [Stat_loss: 0.7303] [NNZ_loss: 0.1725]
+[Epoch 33/100] [D loss: 0.2716] [G loss: 1.6685] [Validity_loss: 0.8869] 
+ [Stat_loss: 0.6309] [NNZ_loss: 0.1506]
+[Epoch 34/100] [D loss: 0.2672] [G loss: 1.6578] [Validity_loss: 0.8654] 
+ [Stat_loss: 0.6444] [NNZ_loss: 0.1479]
+[Epoch 35/100] [D loss: 0.3526] [G loss: 1.5087] [Validity_loss: 0.8009] 
+ [Stat_loss: 0.5351] [NNZ_loss: 0.1727]
+[Epoch 36/100] [D loss: 0.9405] [G loss: 2.4703] [Validity_loss: 1.1294] 
+ [Stat_loss: 1.1565] [NNZ_loss: 0.1844]
+[Epoch 37/100] [D loss: 0.4896] [G loss: 1.6788] [Validity_loss: 0.6978] 
+ [Stat_loss: 0.7102] [NNZ_loss: 0.2707]
+[Epoch 38/100] [D loss: 0.3999] [G loss: 1.8009] [Validity_loss: 1.0941] 
+ [Stat_loss: 0.5245] [NNZ_loss: 0.1824]
+[Epoch 39/100] [D loss: 0.4321] [G loss: 1.6406] [Validity_loss: 0.8048] 
+ [Stat_loss: 0.6796] [NNZ_loss: 0.1562]
+[Epoch 40/100] [D loss: 0.3612] [G loss: 1.7994] [Validity_loss: 0.9534] 
+ [Stat_loss: 0.6658] [NNZ_loss: 0.1802]
+[Epoch 41/100] [D loss: 0.4741] [G loss: 1.4631] [Validity_loss: 0.6906] 
+ [Stat_loss: 0.6112] [NNZ_loss: 0.1613]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 42/100] [D loss: 0.4059] [G loss: 1.9903] [Validity_loss: 0.9047] 
+ [Stat_loss: 0.9406] [NNZ_loss: 0.1450]
+[Epoch 43/100] [D loss: 0.5518] [G loss: 1.7355] [Validity_loss: 0.7833] 
+ [Stat_loss: 0.8060] [NNZ_loss: 0.1461]
+[Epoch 44/100] [D loss: 0.4450] [G loss: 1.7788] [Validity_loss: 0.7696] 
+ [Stat_loss: 0.8639] [NNZ_loss: 0.1454]
+[Epoch 45/100] [D loss: 0.3067] [G loss: 1.5845] [Validity_loss: 0.7527] 
+ [Stat_loss: 0.6671] [NNZ_loss: 0.1648]
+[Epoch 46/100] [D loss: 0.1741] [G loss: 4.8462] [Validity_loss: 1.4794] 
+ [Stat_loss: 2.9388] [NNZ_loss: 0.4280]
+[Epoch 47/100] [D loss: 0.3019] [G loss: 1.6361] [Validity_loss: 0.8158] 
+ [Stat_loss: 0.6644] [NNZ_loss: 0.1558]
+[Epoch 48/100] [D loss: 0.1106] [G loss: 5.2662] [Validity_loss: 1.3985] 
+ [Stat_loss: 3.4764] [NNZ_loss: 0.3913]
+[Epoch 49/100] [D loss: 0.7173] [G loss: 2.4078] [Validity_loss: 1.4645] 
+ [Stat_loss: 0.7676] [NNZ_loss: 0.1757]
+[Epoch 50/100] [D loss: 0.2353] [G loss: 2.2332] [Validity_loss: 1.1480] 
+ [Stat_loss: 0.9234] [NNZ_loss: 0.1617]
+[Epoch 51/100] [D loss: 0.2738] [G loss: 2.0906] [Validity_loss: 0.6736] 
+ [Stat_loss: 1.2700] [NNZ_loss: 0.1469]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 52/100] [D loss: 0.4228] [G loss: 1.6024] [Validity_loss: 0.6102] 
+ [Stat_loss: 0.8430] [NNZ_loss: 0.1491]
+[Epoch 53/100] [D loss: 0.4074] [G loss: 1.3827] [Validity_loss: 0.5507] 
+ [Stat_loss: 0.6807] [NNZ_loss: 0.1513]
+[Epoch 54/100] [D loss: 0.3268] [G loss: 1.5938] [Validity_loss: 0.8558] 
+ [Stat_loss: 0.5640] [NNZ_loss: 0.1739]
+[Epoch 55/100] [D loss: 0.4362] [G loss: 2.2318] [Validity_loss: 1.2121] 
+ [Stat_loss: 0.8315] [NNZ_loss: 0.1882]
+[Epoch 56/100] [D loss: 0.3457] [G loss: 2.3027] [Validity_loss: 1.2278] 
+ [Stat_loss: 0.8622] [NNZ_loss: 0.2126]
+[Epoch 57/100] [D loss: 0.2792] [G loss: 2.2900] [Validity_loss: 1.1483] 
+ [Stat_loss: 0.9787] [NNZ_loss: 0.1630]
+[Epoch 58/100] [D loss: 0.5777] [G loss: 1.7386] [Validity_loss: 0.8050] 
+ [Stat_loss: 0.6876] [NNZ_loss: 0.2460]
+[Epoch 59/100] [D loss: 0.1416] [G loss: 2.2163] [Validity_loss: 1.2569] 
+ [Stat_loss: 0.6679] [NNZ_loss: 0.2915]
+[Epoch 60/100] [D loss: 0.0361] [G loss: 4.9858] [Validity_loss: 3.5087] 
+ [Stat_loss: 1.1691] [NNZ_loss: 0.3080]
+[Epoch 61/100] [D loss: 0.0011] [G loss: 9.6051] [Validity_loss: 6.0344] 
+ [Stat_loss: 3.3496] [NNZ_loss: 0.2211]
+Model and statistics saved to models/smote_model_temp.pt
+[Epoch 62/100] [D loss: 0.0287] [G loss: 4.5613] [Validity_loss: 3.5603] 
+ [Stat_loss: 0.8164] [NNZ_loss: 0.1846]
+[Epoch 63/100] [D loss: 0.0106] [G loss: 4.8620] [Validity_loss: 3.6612] 
+ [Stat_loss: 0.9473] [NNZ_loss: 0.2535]
+[Epoch 64/100] [D loss: 0.0052] [G loss: 4.9078] [Validity_loss: 3.7790] 
+ [Stat_loss: 0.9257] [NNZ_loss: 0.2030]
+[Epoch 65/100] [D loss: 0.0041] [G loss: 4.8721] [Validity_loss: 3.6381] 
+ [Stat_loss: 1.0246] [NNZ_loss: 0.2094]
+[Epoch 66/100] [D loss: 0.0027] [G loss: 5.2663] [Validity_loss: 4.3584] 
+ [Stat_loss: 0.7282] [NNZ_loss: 0.1798]
+[Epoch 67/100] [D loss: 0.0014] [G loss: 5.4656] [Validity_loss: 4.3085] 
+ [Stat_loss: 0.9854] [NNZ_loss: 0.1717]
