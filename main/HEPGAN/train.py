@@ -346,7 +346,7 @@ def train(
             # --------------------
             # Combine scaled losses and step
             # --------------------
-            alpha, beta, chi = 0.15, 0.035, 0.00003
+            alpha, beta, chi = 0.02, 0.4, 0.01
             
             validity_loss = alpha * validity_loss
             stat_loss = beta * stat_loss
@@ -415,7 +415,7 @@ def train(
             f"\n  avg_dR_std        : {(avg_loss_dR_std * beta / 4):.4f}"
             f"\n  avg_pix_mean      : {(avg_loss_pix_mean * beta / 4):.4f}"
             f"\n  avg_pix_std       : {(avg_loss_pix_std * beta / 4):.4f}"
-            f"\nAvg nnz_loss        : {avg_nnz:.4f}"
+            f"\nAvg nnz_loss        : {(avg_nnz * chi):.4f}"
         
             "\n\n------- Final Batch (weighted into g_loss) -------"
             f"\nα = {alpha} ; β = {beta} ; χ = {chi}"
@@ -425,7 +425,7 @@ def train(
             f"\n  dR_std:    {(loss_dR_std.item() * beta / 4):.4f}"
             f"\n  pix_mean:  {(loss_pix_mean.item() * beta / 4):.4f}"
             f"\n  pix_std:   {(loss_pix_std.item() * beta / 4):.4f}"
-            f"\nLast batch nnz_loss:      {(chi * nnz_loss.item()):.4f}"
+            f"\nLast batch nnz_loss:      {(nnz_loss.item() * chi):.4f}"
         
             f"\nTotal g_loss = {g_loss.item():.4f}"
             "\n=========================================\n"

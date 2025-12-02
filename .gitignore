@@ -1,0 +1,26 @@
+# -----------------------------
+# HEPGAN / QGAN Project GitIgnore
+# -----------------------------
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Jupyter notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/
+
+# Slurm logs & debug outputs
+slurm-*.out
+slurm_debug_*.err
+*/slurm-*.out
+*/slurm_debug_*.err
+
+# Model checkpoints (PyTorch)
+*.pt
+main/*.pt
+models/*.pt
+main/models/*.pt
+
+# Dataset files
+data/

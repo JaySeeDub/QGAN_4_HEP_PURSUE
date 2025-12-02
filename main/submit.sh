@@ -2,7 +2,7 @@
 #SBATCH -A m4392
 #SBATCH -C gpu
 #SBATCH -q shared
-#SBATCH -t 1:00:00
+#SBATCH -t 12:00:00
 #SBATCH -n 1
 #SBATCH -c 32
 #SBATCH --gpus-per-task=1
@@ -20,7 +20,7 @@ srun python full_pipeline.py \
     --model-type classical \
     --sigma 0.1 \
     --batch-size 128 \
-    --epochs 5 \
+    --epochs 100 \
     --lr 0.001 \
     --debug 1 \
     --save-model

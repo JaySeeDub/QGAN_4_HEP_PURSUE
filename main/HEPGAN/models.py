@@ -32,6 +32,11 @@ def InitializeModel(model_type: str, sigma: float):
         disc = Discriminator()
         return gen, disc
 
+    elif model_type == "diffusion":
+        gen = Diffusion(sigma=sigma)
+        disc = Discriminator()
+        return gen, disc
+
     # PQC variants
     elif model_type in ("RandomLayer", "StronglyEntangling"):
         pqc_layer = InitializePQC(model_type)
